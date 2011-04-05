@@ -43,3 +43,8 @@ projects[archimedes][download][type] = "git"
 projects[archimedes][download][url] = http://git.drupal.org/sandbox/fiasco/1116808.git 
 projects[archimedes][download][revision] = "drupal-6"
 projects[archimedes][subdir] = "contrib"
+
+; Archimedes Client Library
+libraries[archimedes][download][type] = "file"
+libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Library/raw/master/php/archimedes.class.php
+libraries[archimedes][destination] = "modules/contrib/archimedes"
