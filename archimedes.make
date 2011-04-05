@@ -6,6 +6,7 @@ api = 2
 libraries[profiler][download][type] = "get"
 libraries[profiler][download][url] = "http://ftp.drupal.org/files/projects/profiler-6.x-2.0-beta2.tar.gz"
 
+; Contrib Modules
 projects[admin][subdir] = "contrib"
 projects[admin_tools][subdir] = "contrib"
 projects[advanced_help][subdir] = "contrib"
@@ -35,3 +36,10 @@ projects[tabs][subdir] = "contrib"
 projects[token][subdir] = "contrib"
 projects[views][subdir] = "contrib"
 projects[views_groupby][subdir] = "contrib"
+
+; Archimedes Client Module
+projects[archimedes][type] = module
+projects[archimedes][download][type] = "git"
+projects[archimedes][download][url] = http://git.drupal.org/sandbox/fiasco/1116808.git 
+projects[archimedes][download][revision] = "drupal-6"
+projects[archimedes][subdir] = "contrib"
