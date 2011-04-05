@@ -47,4 +47,4 @@ projects[archimedes][subdir] = "contrib"
 ; Archimedes Client Library
 libraries[archimedes][download][type] = "file"
 libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Library/raw/master/php/archimedes.class.php
-libraries[archimedes][destination] = "modules/contrib/archimedes"
+libraries[archimedes][destination] = "modules/contrib"
