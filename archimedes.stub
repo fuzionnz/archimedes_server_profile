@@ -1,0 +1,9 @@
+; make file for archimedes_server_profile
+core = 6.x
+projects[] = drupal
+api = 2
+
+; Profile.
+projects[archimedes_server_profile][type] = profile
+projects[archimedes_server_profile][download][type] = git
+projects[archimedes_server_profile][download][url] = http://git.drupal.org/sandbox/fiasco/1116734.git
