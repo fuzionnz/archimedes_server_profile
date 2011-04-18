@@ -17,6 +17,7 @@ projects[ctools][subdir] = "contrib"
 projects[date][subdir] = "contrib"
 projects[environment][subdir] = "contrib"
 projects[environment][version] = "1.0-alpha1"
+projects[environment][patch][] = http://drupal.org/files/issues/make-environment-work-in-install.patch
 projects[features][subdir] = "contrib"
 projects[filefield][subdir] = "contrib"
 projects[imageapi][subdir] = "contrib"
