@@ -44,7 +44,14 @@ projects[archimedes][type] = module
 projects[archimedes][download][type] = "git"
 projects[archimedes][download][url] = http://git.drupal.org/sandbox/fiasco/1116808.git 
 projects[archimedes][download][revision] = "drupal-6"
-projects[archimedes][subdir] = "contrib"
+projects[archimedes][subdir] = "custom"
+
+; Archimedes Server Module
+projects[archimedes_server][type] = module
+projects[archimedes_server][download][type] = "git"
+projects[archimedes_server][download][url] = http://git.drupal.org/sandbox/fiasco/1116748.git
+projects[archimedes_server][download][revision] = "master"
+projects[archimedes_server][subdir] = "custom"
 
 ; Archimedes Client Library
 libraries[archimedes][download][type] = "file"
