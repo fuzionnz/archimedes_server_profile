@@ -1,3 +1,46 @@
 name = Archimedes Server
 description = Passive Application Monitoring tool for web applications
 core = 6.x
+
+; Profile dependancies
+dependencies[] = admin
+dependencies[] = admin_tools
+dependencies[] = advanced_help
+dependencies[] = archimedes
+dependencies[] = cck
+dependencies[] = charts_graphs
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = date
+dependencies[] = features
+dependencies[] = filefield
+dependencies[] = imageapi
+dependencies[] = imagecache
+dependencies[] = imagecache_actions
+dependencies[] = imagecache_profiles
+dependencies[] = imagefield
+dependencies[] = job_scheduler
+dependencies[] = lightbox2
+dependencies[] = link
+dependencies[] = nodeaccess
+dependencies[] = nodereferrer
+dependencies[] = panels
+dependencies[] = panels_tabs
+dependencies[] = pathauto
+dependencies[] = revisionreference
+dependencies[] = strongarm
+dependencies[] = tabs
+dependencies[] = token
+dependencies[] = views
+dependencies[] = views_groupby
+
+; The admin user
+users[admin][uid]    = 1
+users[admin][name]   = admin
+users[admin][mail]   = admin@archimedes.domain
+users[admin][roles]  = Admin,Publisher
+users[admin][status] = 1
+
+; Defaults for site name
+variables[site_name] = Archimedes Server
+variables[site_mail] = no-reply@archimedes.domain
