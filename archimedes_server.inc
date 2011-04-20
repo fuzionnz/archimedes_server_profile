@@ -22,12 +22,34 @@ function archimedes_server_decrypt($data, $ekey) {
 }
 
 /**
+ * Load an application node from its unique hash
+ */
+function archimedes_server_load_application($id) {
+  $field = content_fields('field_unique_hash', 'application');
+  $db_info = content_database_info($field);
+  $nid = db_result(db_query("SELECT type.nid FROM {content_type_application} type LEFT JOIN {".$db_info['table']."} hash ON type.vid=hash.vid WHERE hash.field_unique_hash_value = '%s' LIMIT 1", $id));
+  if ($nid) {
+    return node_load($nid);
+  }
+  return FALSE;
+}
+
+/**
  * Process an XML document into a site report.
  */
 function archimedes_server_process_document($xml) {
   module_load_include('inc', 'archimedes_server');
   // create blank node object
-  $node = new stdClass();
+  $options = variable_get('node_options_application', array());
+  $node = (object) array(
+    'type' => 'application',
+    'status' => in_array('status', $options),
+    'promote' => in_array('promote', $options),
+    'sticky' => in_array('sticky', $options),
+    'created' => time(),
+    'comment' => variable_get('comment_application', 2),
+    'uid' => ARCHIMEDES_SYSTEM_UID,
+  );
 
   $dom = new DOMDocument();
   $dom->loadXML($xml);
@@ -37,39 +59,34 @@ function archimedes_server_process_document($xml) {
     return;
   }
 
+  $vocab = archimedes_server_get_vocabulary(ARCHIMEDES_APP_CATEGORIES);
+
   // Get unique identifier and check if in system
-  $id = $dom->documentElement->getAttribute('id');
-  $type = $dom->documentElement->getAttribute('type');
-  $author = $dom->documentElement->getAttribute('author');
+  $node->field_unique_hash = array(array('value' => $dom->documentElement->getAttribute('id')));
+  $node->taxonomy['tags'][$vocab->vid][] = $dom->documentElement->getAttribute('type');
   $datetime = $dom->documentElement->getAttribute('datetime');
 
-  // ignore if content type does not exist
-  if (!$node_type = content_types($type)) {
-    watchdog('Archimedes', "Archimedes doesn't not currently support $type.", array(), WATCHDOG_ERROR);
-    return;
-  }
-
-  // The user may not yet exist so create the user
-  // but do not activate the user.
-  $uid = archimedes_server_user_save($author);
-
-  // check if there is a node with unique id already
-  $field = content_fields('field_unique_hash', $type);
-  $db_info = content_database_info($field);
-  if ($nid = db_result(db_query(sprintf("SELECT type.nid FROM {content_type_%s} type LEFT JOIN {".$db_info['table']."} hash ON type.vid=hash.vid WHERE hash.field_unique_hash_value = '%s' LIMIT 1", $type, $id)))) {
-    $node = node_load(array('nid' => $nid));
+  if ($existing_node = archimedes_server_load_application($node->field_unique_hash[0]['value'])) {
+    $node = $existing_node;
+    // Make sure we create a new revision rather than overwriting the existing one.
+    // This is so we can track changes over a period of time.
     $node->revision = TRUE;
+
+    // Load the taxonomy tags.
+    $tags = array();
+    foreach ($node->taxonomy as $term) {
+      if ($term->vid != $vocab->vid) {
+        continue;
+      }
+      $tags[$vocab->vid][] = $term->name;
+    }
+    $node->taxonomy['tags'] = $tags;
   }
-  else {
-    $node->type = $node_type['type'];
-    $node->created = time();
-    $node->status = 1; //published
-    $node->promote = 0;
-    $node->sticky = 0;
-    $node->uid = $uid;
-    $node->comment = variable_get('comment_' . $type, 2);
-    $node->field_unique_hash = array(0 => array('value' => $id));
-  }
+
+  // Grab the field information about the application content type.
+  // This allows us to dynamically expand the application content
+  // type without having to write code to handle the expansion.
+  $node_type = content_types('application');
 
   // Attempt to parse the XML into a node. Any failure to parse
   // will throw an exception in which case we will not try to
@@ -80,13 +97,13 @@ function archimedes_server_process_document($xml) {
       // non cck fields
       if ($fid == 'title' || $fid == 'body') {
         $node->{$fid} = trim($item->nodeValue);
-        return;
+        continue;
       }
 
       // If content type has no record of field id
       // then do not attempt to save it.
       if (!$field = $node_type['fields'][$fid]) {
-        return;
+        continue;
       }
 
       $values = array();
@@ -103,52 +120,23 @@ function archimedes_server_process_document($xml) {
       $node->{$fid} = $values;
     }
 
-    // collect screenshot of website if not already saved.
-    if (archimedes_server_check_webkit() && !isset($node->field_thumbnail[0]) && isset($node->field_servername[0]['url'])) {
-      try {
-        $filename = preg_replace("/[^a-zA-Z0-9]/", "", $node->title) . '.png';
-        $filepath = file_directory_temp() . '/' . $filename;
-        $files_directory = archimedes_find_root() . '/' . file_directory_path();
-        $cmd = "python " . dirname(__FILE__) . "/python-webkit2png/webkit2png.py --log=" . $files_directory . "/webkit2png.log -x 1024 768 -g 1024 768 -o $filepath -w 1 %s";
-        archimedes_server_shell_exec($cmd, $node->field_servername[0]['url']);
-        if (!file_exists($filepath)) {
-          watchdog("Archimedes", "Server failed to take screenshot of site %url", array("%url" => $node->field_servername[0]['url']), WATCHDOG_ERROR);
-          // Exit early.
-          throw new Exception();
-        }
-
-        $max_width = 800;
-        $max_height = 600;
-
-        if (module_exists('imageapi') && imageapi_default_toolkit()) {
-          $res = imageapi_image_open($filepath);
-          imageapi_image_scale($res, $max_width, $max_height);
-          imageapi_image_close($res);
-        }
-        // Try to resize the image to fit the dimensions.
-        elseif (image_get_toolkit()) {
-          image_scale($filepath, $filepath, $max_width, $max_height);
-        }
-
-        $field = field_file_save_file($filepath, array(),file_directory_path().'/thumbs');
-
-        // Generate imagecache thumbnail
-        $presetname = 'SiteThumb';
-        if ($preset = imagecache_preset_by_name($presetname)) {
-          $dst = imagecache_create_path($presetname, $field['filepath']);
-          if (!file_exists($dst)) {
-            imagecache_build_derivative($preset['actions'], $field['filepath'], $dst);
-          }
-        }
-
-        $node->field_thumbnail = array(0 => $field);
+    // Check that there isn't already a screenshot and that
+    // a new one can be generated.
+    if (!isset($node->field_screenshot[0]) && isset($node->field_servername[0]['url'])) {
+      if ($field = archimedes_server_snap_screenshot($node->field_servername[0]['url'])) {
+        $node->field_screenshot = array(0 => $field);
       }
-      catch (Exception $e) {}
     }
 
     // Record the time of report import.
     $update = explode('+', date('c',strtotime($datetime))); // convert back to UTC timezone
     $node->field_last_update = array(0 => array('value' => $update[0]));
+
+    if (is_array($node->taxonomy['tags'])) {
+      foreach ($node->taxonomy['tags'] as $vid => $terms) {
+        $node->taxonomy['tags'][$vid] = implode(', ', $terms);
+      }
+    }
 
     // save now so hooks have access to the nid if needed
     node_save($node);
@@ -169,6 +157,62 @@ function archimedes_server_process_document($xml) {
     return FALSE;
   }
   return TRUE;
+}
+
+/**
+ * Load a vocabulary based on machine_name.
+ */
+function archimedes_server_get_vocabulary($machine_name) {
+  static $vocabs;
+  if (!isset($vocabs)) {
+    module_load_include('inc', 'features', 'includes/features.taxonomy');
+    $vocabs = _taxonomy_features_get_vocabularies();
+  }
+  return $vocabs[$machine_name];
+}
+
+/**
+ * Take a screenshot of a website if its accessible from Archimedes Server.
+ */
+function archimedes_server_snap_screenshot($url) {
+  if (!archimedes_server_check_webkit()) {
+    return;
+  }
+
+  $urlinfo = parse_url($url);
+  // Create a filepath name that is url compliant as it will be requested
+  // over HTTP later.
+  $filename = urlencode(strtr($urlinfo['host'] . urldecode($urlinfo['path']), array('/' => '-', '.' => '', ' ' => '')));
+  $filepath = file_directory_temp() . '/' . $filename;
+  $files_directory = archimedes_find_root() . '/' . file_directory_path();
+  $cmd = "python " . dirname(__FILE__) . "/python-webkit2png/webkit2png.py --log=" . $files_directory . "/webkit2png.log -x 1024 768 -g 1024 768 -o $filepath -w 1 %s";
+  archimedes_server_shell_exec($cmd, $url);
+  if (!file_exists($filepath)) {
+    watchdog("Archimedes", "Server failed to take screenshot of site %url", array("%url" => $node->field_servername[0]['url']), WATCHDOG_ERROR);
+    return;
+  } 
+    
+  $max_width = 800;
+  $max_height = 600;
+
+  // If the max width and height is set on the field, use that as the resolution limitaion.
+  $field = content_fields('field_screenshot', 'application');
+  if (!in_array($field['widget']['max_resolution'], array('0', '')) && (strpos($field['widget']['max_resolution'], 'x') !== FALSE)) {
+    list($max_width, $max_height) = explode('x', $field['widget']['max_resolution']);
+  }
+  
+  if (module_exists('imageapi') && imageapi_default_toolkit()) {
+    $res = imageapi_image_open($filepath);
+    imageapi_image_scale($res, $max_width, $max_height);
+    imageapi_image_close($res);
+  } 
+  // Try to resize the image to fit the dimensions.
+  elseif (image_get_toolkit()) {
+    image_scale($filepath, $filepath, $max_width, $max_height);
+  }
+
+  // Save the image and generate data for population to the field.
+  return field_file_save_file($filepath, array(), file_directory_path());
 }
 
 /**

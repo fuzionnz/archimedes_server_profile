@@ -1,5 +1,8 @@
 <?php
 
+define('ARCHIMEDES_SYSTEM_UID', 2);
+define('ARCHIMEDES_APP_CATEGORIES', 'app_categories');
+
 require_once dirname(__FILE__) . '/archimedes_server.features.inc';
 
 /**
@@ -124,7 +127,7 @@ function archimedes_server_form_validate_inbox($form, $form_state) {
 }
 
 /**
- * Handle a server request to process an encrypted XML document
+ * Menu Callback: Handle a server request to process an encrypted XML document
  */
 function archimedes_server_post_xml() {
   if (!$data = json_decode(file_get_contents('php://input'))) {
@@ -134,7 +137,13 @@ function archimedes_server_post_xml() {
   require_once dirname(__FILE__) . '/archimedes_server.inc';
   $xml = archimedes_server_decrypt(base64_decode($data->data), base64_decode($data->key));
 
-  echo archimedes_server_process_document($xml) ? "1" : "0";
+  $return = array(
+    'success' => 1,
+  );
+  if (!archimedes_server_process_document($xml)) {
+    $return['success'] = 0;
+  }
+  print json_encode($return);
   die;
 }
 
@@ -147,7 +156,9 @@ function archimedes_server_cron() {
 }
 
 
-
+/**
+ * Check for the presense of webkit.
+ */
 function archimedes_server_check_webkit(){
   return is_dir(dirname(__FILE__) . '/python-webkit2png');
 }
