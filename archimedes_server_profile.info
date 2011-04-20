@@ -50,6 +50,7 @@ dependencies[] = revisionreference
 dependencies[] = search
 dependencies[] = strongarm
 dependencies[] = tabs
+dependencies[] = tagging
 dependencies[] = taxonomy
 dependencies[] = text
 dependencies[] = token
