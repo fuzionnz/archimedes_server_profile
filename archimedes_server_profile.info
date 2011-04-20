@@ -67,6 +67,13 @@ users[admin][mail]   = admin@archimedes.domain
 users[admin][roles]  = Admin,Publisher
 users[admin][status] = 1
 
+; User to create content on-the-fly by reports.
+users[system][uid]   = 2
+users[system][name]  = system
+users[system][mail]  = system@no-reply
+users[system][roles] = Publisher
+users[system][status]= 1
+
 ; Defaults for site name
 variables[site_name] = Archimedes Server
 variables[site_mail] = no-reply@archimedes.domain
