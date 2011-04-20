@@ -200,13 +200,14 @@ function archimedes_server_strongarm() {
   $strongarm->name = 'content_extra_weights_application';
   $strongarm->value = array(
     'title' => '-5',
-    'body_field' => '2',
-    'revision_information' => '3',
-    'author' => '4',
-    'options' => '5',
-    'comment_settings' => '7',
-    'menu' => '1',
-    'path' => '6',
+    'body_field' => '7',
+    'revision_information' => '8',
+    'author' => '9',
+    'options' => '10',
+    'comment_settings' => '12',
+    'menu' => '6',
+    'taxonomy' => '-2',
+    'path' => '11',
   );
 
   $export['content_extra_weights_application'] = $strongarm;
@@ -216,13 +217,13 @@ function archimedes_server_strongarm() {
   $strongarm->name = 'content_extra_weights_host';
   $strongarm->value = array(
     'title' => '-5',
-    'body_field' => '-3',
-    'revision_information' => '-1',
-    'author' => '-2',
-    'options' => '0',
-    'comment_settings' => '2',
-    'menu' => '-4',
-    'path' => '1',
+    'body_field' => '-4',
+    'revision_information' => '1',
+    'author' => '0',
+    'options' => '2',
+    'comment_settings' => '4',
+    'menu' => '-1',
+    'path' => '3',
   );
 
   $export['content_extra_weights_host'] = $strongarm;

@@ -6,14 +6,78 @@
 function archimedes_server_content_default_fields() {
   $fields = array();
 
+  // Exported field: field_common_hash
+  $fields['application-field_common_hash'] = array(
+    'field_name' => 'field_common_hash',
+    'type_name' => 'application',
+    'display_settings' => array(
+      'weight' => '12',
+      'parent' => 'group_reference',
+      'label' => array(
+        'format' => 'above',
+      ),
+      'teaser' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'text',
+    'required' => '1',
+    'multiple' => '0',
+    'module' => 'text',
+    'active' => '1',
+    'text_processing' => '0',
+    'max_length' => '32',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'widget' => array(
+      'rows' => 5,
+      'size' => '60',
+      'default_value' => array(
+        '0' => array(
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_common_hash][0][value',
+        ),
+      ),
+      'default_value_php' => NULL,
+      'label' => 'Common Identifier',
+      'weight' => '12',
+      'description' => '',
+      'type' => 'text_textfield',
+      'module' => 'text',
+    ),
+  );
+
   // Exported field: field_db_size
   $fields['application-field_db_size'] = array(
     'field_name' => 'field_db_size',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '3',
+      'parent' => 'group_database',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -61,7 +125,7 @@ function archimedes_server_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Database Size',
-      'weight' => '8',
+      'weight' => '3',
       'description' => '',
       'type' => 'number',
       'module' => 'number',
@@ -73,9 +137,10 @@ function archimedes_server_content_default_fields() {
     'field_name' => 'field_dbhost',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '2',
+      'parent' => 'group_database',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -126,7 +191,7 @@ function archimedes_server_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Database Host',
-      'weight' => '7',
+      'weight' => '2',
       'description' => '',
       'type' => 'nodereference_autocomplete',
       'module' => 'nodereference',
@@ -138,9 +203,10 @@ function archimedes_server_content_default_fields() {
     'field_name' => 'field_dbname',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '1',
+      'parent' => 'group_database',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -188,10 +254,77 @@ function archimedes_server_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Database name',
-      'weight' => '6',
+      'weight' => '1',
       'description' => '',
       'type' => 'text_textfield',
       'module' => 'text',
+    ),
+  );
+
+  // Exported field: field_screenshot
+  $fields['application-field_screenshot'] = array(
+    'field_name' => 'field_screenshot',
+    'type_name' => 'application',
+    'display_settings' => array(
+      'weight' => '-4',
+      'parent' => '',
+      'label' => array(
+        'format' => 'above',
+      ),
+      'teaser' => array(
+        'format' => 'siteThumbMini_linked',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'imagefield__lightbox2__siteThumbMini__original',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'filefield',
+    'required' => '0',
+    'multiple' => '0',
+    'module' => 'filefield',
+    'active' => '1',
+    'list_field' => '0',
+    'list_default' => 1,
+    'description_field' => '0',
+    'widget' => array(
+      'file_extensions' => 'png gif jpg jpeg',
+      'file_path' => '',
+      'progress_indicator' => 'bar',
+      'max_filesize_per_file' => '',
+      'max_filesize_per_node' => '',
+      'max_resolution' => '0',
+      'min_resolution' => '0',
+      'alt' => '',
+      'custom_alt' => 0,
+      'title' => '',
+      'custom_title' => 0,
+      'title_type' => 'textfield',
+      'default_image' => NULL,
+      'use_default_image' => 0,
+      'label' => 'Screenshot',
+      'weight' => '-4',
+      'description' => '',
+      'type' => 'imagefield_widget',
+      'module' => 'imagefield',
     ),
   );
 
@@ -200,9 +333,10 @@ function archimedes_server_content_default_fields() {
     'field_name' => 'field_servername',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '-3',
+      'parent' => '',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -258,7 +392,7 @@ function archimedes_server_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Servername',
-      'weight' => '-4',
+      'weight' => '-3',
       'description' => '',
       'type' => 'link',
       'module' => 'link',
@@ -270,9 +404,10 @@ function archimedes_server_content_default_fields() {
     'field_name' => 'field_site_env',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '-1',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
-        'exclude' => 0,
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -321,7 +456,7 @@ Development',
       ),
       'default_value_php' => NULL,
       'label' => 'Environment',
-      'weight' => '-3',
+      'weight' => '-1',
       'description' => '',
       'type' => 'optionwidgets_select',
       'module' => 'optionwidgets',
@@ -333,9 +468,10 @@ Development',
     'field_name' => 'field_sitedata',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '2',
+      'parent' => 'group_metrics',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -395,9 +531,10 @@ Development',
     'field_name' => 'field_sitesize',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '3',
+      'parent' => 'group_metrics',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -452,14 +589,78 @@ Development',
     ),
   );
 
+  // Exported field: field_unique_hash
+  $fields['application-field_unique_hash'] = array(
+    'field_name' => 'field_unique_hash',
+    'type_name' => 'application',
+    'display_settings' => array(
+      'weight' => '11',
+      'parent' => 'group_reference',
+      'label' => array(
+        'format' => 'above',
+      ),
+      'teaser' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'text',
+    'required' => '1',
+    'multiple' => '0',
+    'module' => 'text',
+    'active' => '1',
+    'text_processing' => '0',
+    'max_length' => '32',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'widget' => array(
+      'rows' => 5,
+      'size' => '60',
+      'default_value' => array(
+        '0' => array(
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_unique_hash][0][value',
+        ),
+      ),
+      'default_value_php' => NULL,
+      'label' => 'Unique Identifier',
+      'weight' => '11',
+      'description' => '',
+      'type' => 'text_textfield',
+      'module' => 'text',
+    ),
+  );
+
   // Exported field: field_webroot
   $fields['application-field_webroot'] = array(
     'field_name' => 'field_webroot',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => '1',
+      'parent' => 'group_metrics',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -519,9 +720,10 @@ Development',
     'field_name' => 'field_webserver',
     'type_name' => 'application',
     'display_settings' => array(
+      'weight' => 0,
+      'parent' => 'group_metrics',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
@@ -579,6 +781,128 @@ Development',
     ),
   );
 
+  // Exported field: field_appdb
+  $fields['host-field_appdb'] = array(
+    'field_name' => 'field_appdb',
+    'type_name' => 'host',
+    'display_settings' => array(
+      'label' => array(
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'nodereferrer',
+    'required' => '0',
+    'multiple' => '0',
+    'module' => 'nodereferrer',
+    'active' => '1',
+    'referrer_types' => array(
+      'application' => 'application',
+      'host' => 0,
+      'sla' => 0,
+    ),
+    'referrer_fields' => array(
+      'field_dbhost' => 'field_dbhost',
+      'field_webserver' => 0,
+    ),
+    'referrer_nodes_per_page' => '0',
+    'referrer_pager_element' => '0',
+    'referrer_order' => 'TITLE_ASC',
+    'widget' => array(
+      'label' => 'Databases',
+      'weight' => '-2',
+      'description' => '',
+      'type' => 'nodereferrer_list',
+      'module' => 'nodereferrer',
+    ),
+  );
+
+  // Exported field: field_apprefs
+  $fields['host-field_apprefs'] = array(
+    'field_name' => 'field_apprefs',
+    'type_name' => 'host',
+    'display_settings' => array(
+      'label' => array(
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'nodereferrer',
+    'required' => '0',
+    'multiple' => '0',
+    'module' => 'nodereferrer',
+    'active' => '1',
+    'referrer_types' => array(
+      'application' => 'application',
+      'host' => 0,
+      'sla' => 0,
+    ),
+    'referrer_fields' => array(
+      'field_webserver' => 'field_webserver',
+      'field_dbhost' => 0,
+    ),
+    'referrer_nodes_per_page' => '0',
+    'referrer_pager_element' => '0',
+    'referrer_order' => 'TITLE_ASC',
+    'widget' => array(
+      'label' => 'Applications',
+      'weight' => '-3',
+      'description' => '',
+      'type' => 'nodereferrer_list',
+      'module' => 'nodereferrer',
+    ),
+  );
+
   // Exported field: field_disk_space
   $fields['host-field_disk_space'] = array(
     'field_name' => 'field_disk_space',
@@ -622,7 +946,7 @@ Development',
       ),
       'default_value_php' => NULL,
       'label' => 'Maximum Disk Space',
-      'weight' => '4',
+      'weight' => '6',
       'description' => 'This value should not be the maximum disk drive space, instead a soft limit which indicates when site data is approaching desired maximum.',
       'type' => 'number',
       'module' => 'number',
@@ -675,7 +999,7 @@ Development',
     'referrer_order' => 'TITLE_ASC',
     'widget' => array(
       'label' => 'DB Host Clients',
-      'weight' => '6',
+      'weight' => '8',
       'description' => '',
       'type' => 'nodereferrer_list',
       'module' => 'nodereferrer',
@@ -737,7 +1061,7 @@ Development',
       ),
       'default_value_php' => NULL,
       'label' => 'Location',
-      'weight' => '3',
+      'weight' => '5',
       'description' => '',
       'type' => 'text_textfield',
       'module' => 'text',
@@ -809,7 +1133,7 @@ Development',
     'referrer_order' => 'TITLE_ASC',
     'widget' => array(
       'label' => 'Hosted Sites',
-      'weight' => '5',
+      'weight' => '7',
       'description' => '',
       'type' => 'nodereferrer_list',
       'module' => 'nodereferrer',
@@ -987,20 +1311,25 @@ Development',
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('Applications');
+  t('Common Identifier');
   t('DB Host Clients');
   t('Database Host');
   t('Database Size');
   t('Database name');
+  t('Databases');
   t('Environment');
   t('Hosted Sites');
   t('Location');
   t('Maximum Allowable Disk Space');
   t('Maximum Disk Space');
+  t('Screenshot');
   t('Servername');
   t('Site Size');
   t('Sitedata');
   t('Soft Copy Attachment');
   t('Support Hours');
+  t('Unique Identifier');
   t('Web Base');
   t('Web Host');
 
