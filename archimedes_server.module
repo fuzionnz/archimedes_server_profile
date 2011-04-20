@@ -28,7 +28,7 @@ function archimedes_server_menu() {
     'page callback' => 'archimedes_server_verify_user',
   );
   $items['archimedes-server/update'] = array(
-    'access arguments' => array('always acces'),
+    'access arguments' => array('always access'),
     'access callback' => 'is_string',
     'page callback' => 'archimedes_server_post_xml',
   );
@@ -124,96 +124,15 @@ function archimedes_server_form_validate_inbox($form, $form_state) {
 }
 
 /**
- * Open up the archimedes email inbox.
+ * Handle a server request to process an encrypted XML document
  */
-function archimedes_server_open_inbox($server, $port, $user, $pass, $ssl = FALSE) {
-  $mailbox = strtr('{%server:%port/%path}INBOX', array(
-    '%server' => $server,
-    '%port' => $port,
-    '%path' => $ssl ? 'pop3/ssl/novalidate-cert' : 'pop3/notls',
-  ));
-  return imap_open(imap_utf7_encode($mailbox), $user, $pass);
-}
-
-/**
- * Reads the configured inbox and builds array of attached XML
- */
-function archimedes_server_get_xml(){
-  $mbox = archimedes_server_open_inbox(
-    variable_get('archimedes_mail_server', ''),
-    variable_get('archimedes_mail_port', '110'),
-    variable_get('archimedes_mail_user', ''),
-    variable_get('archimedes_mail_password', ''),
-    variable_get('archimedes_mail_ssl', FALSE)
-  );
-  $data = array();
-  // Read each message in inbox
-  for($i = 1; $i <= imap_num_msg($mbox); $i++) {
-    $struct = imap_fetchstructure($mbox, $i);
-
-    $pkey = variable_get('archimedes_key_private', '');
-    $id = 1;
-    $xml = '';
-    $ekey = '';
-    $crypt = FALSE;
-    foreach($struct->parts as $section) {
-      $sect = imap_fetchbody($mbox,$i,$id);
-
-      // Decode message if encoded
-      if ($section->encoding == 3)     // 3 = BASE64
-        $sect = base64_decode($sect);
-      elseif ($section->encoding == 4) // 4 = QUOTED-PRINTABLE
-        $sect = quoted_printable_decode($sect);
-
-      // check for xml attachment
-      if ($section->subtype == 'XML' && $section->disposition == 'ATTACHMENT') {
-        $xml = $sect;
-      }
-      // Encrypted messages will contain section starting 'EKEY:'
-      elseif (substr($sect,0,5) == 'EKEY:') {
-        $crypt = TRUE;
-        $ekey = substr($sect,6);
-      }
-      $id++;
-    }
-    imap_delete($mbox, $i);
-
-    // Decrypt encrypted message
-    if ($crypt) {
-      $prikey = openssl_pkey_get_private($pkey);
-      openssl_open($xml,$uncrypt,$ekey, $prikey);
-      openssl_free_key($prikey);
-      $xml = $uncrypt;
-      if (!isset($xml)) {
-        $header = imap_headerinfo($mbox,$i);
-        watchdog("Archimedes","An encryted update was recieved from %from, but Archimedes Server was unable to decrypt it. It is likely the saved public key is incorrect.", array("%from" => $header->fromaddress), WATCHDOG_ERROR);
-        continue;
-      }
-    }
-    if (empty($xml)) {
-      $header = imap_headerinfo($mbox,$i);
-      watchdog("Archimedes","An update was recieved from %from, but Archimedes Server was unable to read it.", array("%from" => $header->fromaddress), WATCHDOG_ERROR);
-      continue;
-    }
-    $data[] = $xml;
-  }
-  imap_expunge($mbox); //uncomment to delete from mailbox. Leave commented during testing
-  imap_close($mbox);
-
-  return $data;
-}
-
 function archimedes_server_post_xml() {
   if (!$data = json_decode(file_get_contents('php://input'))) {
     drupal_not_found();
     die;
   }
-  $ekey = base64_decode($data->key);
-  $data = base64_decode($data->data);
-
-  $prikey = openssl_pkey_get_private(variable_get('archimedes_key_private', ''));
-  openssl_open($data,$xml,$ekey, $prikey);
-  openssl_free_key($prikey);
+  require_once dirname(__FILE__) . '/archimedes_server.inc';
+  $xml = archimedes_server_decrypt(base64_decode($data->data), base64_decode($data->key));
 
   echo archimedes_server_process_document($xml) ? "1" : "0";
   die;
@@ -223,244 +142,11 @@ function archimedes_server_post_xml() {
 * Implementation of hook_cron().
 */
 function archimedes_server_cron() {
+  require_once dirname(__FILE__) . '/archimedes_server.mail.inc';
   archimedes_server_clear_inbox();
 }
 
 
-/**
-* Update all nodes from inbox
-*/
-function archimedes_server_clear_inbox() {
-  module_load_include('inc', 'archimedes_server');
-
-  // Get all updates form inbox 
-  $data = archimedes_server_get_xml();
-
-  if (empty($data)) {
-    return;
-  }
-  date_default_timezone_set('UTC');
-
-  // loop through each xml update
-  foreach($data as $xml) {
-    archimedes_server_process_document($xml);
-  }
-}
-
-/**
- * Process an XML document into a site report.
- */
-function archimedes_server_process_document($xml) {
-  module_load_include('inc', 'archimedes_server');
-  // create blank node object
-  $node = new stdClass();
-
-  $dom = new DOMDocument();
-  $dom->loadXML($xml);
-
-  // fail if $dom->documentElement not set
-  if (!isset($dom->documentElement)) {
-    return;
-  }
-
-  // Get unique identifier and check if in system
-  $id = $dom->documentElement->getAttribute('id');
-  $type = $dom->documentElement->getAttribute('type');
-  $author = $dom->documentElement->getAttribute('author');
-  $datetime = $dom->documentElement->getAttribute('datetime');
-
-  // ignore if content type does not exist
-  if (!$node_type = content_types($type)) {
-    watchdog('Archimedes', "Archimedes doesn't not currently support $type.", array(), WATCHDOG_ERROR);
-    return;
-  }
-
-  // The user may not yet exist so create the user
-  // but do not activate the user.
-  $uid = archimedes_server_user_save($author);
-
-  // check if there is a node with unique id already
-  $field = content_fields('field_unique_hash', $type);
-  $db_info = content_database_info($field);
-  if ($nid = db_result(db_query(sprintf("SELECT type.nid FROM {content_type_%s} type LEFT JOIN {".$db_info['table']."} hash ON type.vid=hash.vid WHERE hash.field_unique_hash_value = '%s' LIMIT 1", $type, $id)))) {
-    $node = node_load(array('nid' => $nid));
-    $node->revision = TRUE;
-  }
-  else {
-    $node->type = $node_type['type'];
-    $node->created = time();
-    $node->status = 1; //published
-    $node->promote = 0;
-    $node->sticky = 0;
-    $node->uid = $uid;
-    $node->comment = variable_get('comment_' . $type, 2);
-    $node->field_unique_hash = array(0 => array('value' => $id));
-  }
-
-  // Attempt to parse the XML into a node. Any failure to parse
-  // will throw an exception in which case we will not try to
-  // save the node.
-  try {
-    foreach($dom->getElementsByTagName('field') as $item) {
-      $fid = $item->getAttribute('id');
-      // non cck fields
-      if ($fid == 'title' || $fid == 'body') {
-        $node->{$fid} = trim($item->nodeValue);
-        return;
-      }
-
-      // If content type has no record of field id
-      // then do not attempt to save it.
-      if (!$field = $node_type['fields'][$fid]) {
-        return;
-      }
-
-      $values = array();
-      foreach ($item->getElementsByTagName('value') as $value) {
-        // Check for plugins being used.
-        $plugins = array();
-        foreach ($value->attributes as $v) {
-          $plugins[$v->namespaceURI] = strtr($v->namespaceURI, array('monitor-plugin:' => ''));
-        }
-        $values[] = archimedes_server_run_plugins($plugins, $field, $value);
-      }
-
-      //attach values to node field
-      $node->{$fid} = $values;
-    }
-
-    // collect screenshot of website if not already saved.
-    if (archimedes_server_check_webkit() && !isset($node->field_thumbnail[0]) && isset($node->field_servername[0]['url'])) {
-      try {
-        $filename = preg_replace("/[^a-zA-Z0-9]/", "", $node->title) . '.png';
-        $filepath = file_directory_temp() . '/' . $filename;
-        $files_directory = archimedes_find_root() . '/' . file_directory_path();
-        $cmd = "python " . dirname(__FILE__) . "/python-webkit2png/webkit2png.py --log=" . $files_directory . "/webkit2png.log -x 1024 768 -g 1024 768 -o $filepath -w 1 %s";
-        archimedes_server_shell_exec($cmd, $node->field_servername[0]['url']);
-        if (!file_exists($filepath)) {
-          watchdog("Archimedes", "Server failed to take screenshot of site %url", array("%url" => $node->field_servername[0]['url']), WATCHDOG_ERROR);
-          // Exit early.
-          throw new Exception();
-        }
-
-        $max_width = 800;
-        $max_height = 600;
-
-        if (module_exists('imageapi') && imageapi_default_toolkit()) {
-          $res = imageapi_image_open($filepath);
-          imageapi_image_scale($res, $max_width, $max_height);
-          imageapi_image_close($res);
-        }
-        // Try to resize the image to fit the dimensions.
-        elseif (image_get_toolkit()) {
-          image_scale($filepath, $filepath, $max_width, $max_height);
-        }
-
-        $field = field_file_save_file($filepath, array(),file_directory_path().'/thumbs');
-
-        // Generate imagecache thumbnail
-        $presetname = 'SiteThumb';
-        if ($preset = imagecache_preset_by_name($presetname)) {
-          $dst = imagecache_create_path($presetname, $field['filepath']);
-          if (!file_exists($dst)) {
-            imagecache_build_derivative($preset['actions'], $field['filepath'], $dst);
-          }
-        }
-
-        $node->field_thumbnail = array(0 => $field);
-      }
-      catch (Exception $e) {}
-    }
-
-    // Record the time of report import.
-    $update = explode('+', date('c',strtotime($datetime))); // convert back to UTC timezone
-    $node->field_last_update = array(0 => array('value' => $update[0]));
-
-    // save now so hooks have access to the nid if needed
-    node_save($node);
-    $node->revision = FALSE;
-
-    // allow other modules to modify node before final save
-    drupal_alter('archimedes_site', $node, 'pre');
-
-    // save node after hooks
-    node_save($node);
-
-    // allow other modules to modify node after final save
-    drupal_alter('archimedes_site', $node, 'post');
-
-  }
-  catch (Exception $e) {
-    watchdog('Archimedes', "Cannot import report into node: %reason", array("%reason" => $e->getMessage()), WATCHDOG_ERROR);
-    return FALSE;
-  }
-  return TRUE;
-}
-
-/**
-  * Hook into the archimedes_site hook (for drupal_alter in update function)
-  *
-  * Check whether the directory hashes have changed and notify roles if they have
-  * @author Adam Bramley
-  */
-function archimedes_server_archimedes_site_alter($node){
-  $roles = variable_get('archimedes_notifications', array());
-  $hash_roles = $roles['archimedes_directory_hash_roles'];
-  $revisions = node_revision_list($node);
-  //take the 2nd element in the array
-  next($revisions);
-  if ($key = key($revisions))  {
-    $previous_node = node_load($node->nid, $key);
-  }
-  else  {
-    //no previous revision to compare to so just return
-    return;
-  }
-
-  $current_hash = $node->field_directory_hash[0]['value'];
-  $previous_hash = $previous_node->field_directory_hash[0]['value'];
-  if ($current_hash != $previous_hash) {
-    $users = $node->field_users;
-    $emails = archimedes_server_get_role_emails($users, $hash_roles);
-    if (!empty($emails))  {
-      $from = variable_get('archimedes_server_email','archimedes@catalyst.net.nz');
-      $message = array(
-        'to' => implode(', ', $emails),
-        'subject' => t("Directory hash warning ($node->title)"),
-        'body' => "<h4>Security Warning</h4>A change in the md5 hashing of the site data for $node->title has been detected. This could potentially be a malicious attack, please check with site maintainers to see if there's been a recent update.",
-        'headers' => array(
-          'MIME-Version' => '1.0',
-          'Content-Type' => 'text/html; charset=UTF-8; format=flowed',
-          'Content-Transfer-Encoding' => '8Bit',
-          'X-Mailer' => 'Drupal',
-          'From' => $from
-        ),
-      );
-      if (module_exists('messaging')) {
-        $send = messaging_message_send($emails, $message, variable_get('messaging_default_method', 'mail'));
-      }
-      else{
-        $send = drupal_mail_send($message);
-      }
-    }
-  }
-}
-
-function archimedes_server_get_role_emails($users, $roles)  {
-  $emails = array();
-  foreach ($users as $current)  {
-    $user = user_load($current['uid']);
-    $user_roles = $user->roles;
-    while ($role = current($user_roles)) {
-      if (in_array(key($user_roles), $roles) && !in_array($user->mail, $emails))  {
-        //a role for the user is in the roles set to be notified
-       $emails[] = $user->mail;
-      }
-      next($user_roles);
-    }
-  }
-  return $emails;
-}
 
 function archimedes_server_check_webkit(){
   return is_dir(dirname(__FILE__) . '/python-webkit2png');
@@ -475,7 +161,6 @@ function archimedes_server_archimedes_server_plugins() {
   );
 }
 
-
 function archimedes_server_shell_exec($cmd) {
   $args = func_get_args();
 
@@ -487,8 +172,6 @@ function archimedes_server_shell_exec($cmd) {
 
   return exec($command, $output, $result) ? $output : FALSE;
 } // archimedes_shell_exec()
-
-
 
 /**
   * Implementation of hook_block().
@@ -697,13 +380,6 @@ function archimedes_server_nodeapi(&$node, $op, $teaser, $page) {
   }
 }
 
-
-function archimedes_server_format_bytes($size) {
-    $units = array(' B', ' KB', ' MB', ' GB', ' TB');
-    for ($i = 0; $size >= 1024 && $i < 4; $i++) $size /= 1024;
-    return round($size, 2).$units[$i];
-}
-
 /**
  * Verify a user has rights to administer a site.
  */
@@ -714,12 +390,11 @@ function archimedes_server_verify_user() {
     if (!isset($_GET['ekey']) || !isset($_GET['data'])) {
       throw new Exception($token);
     }
+    require_once dirname(__FILE__) . '/archimedes_server.inc';
 
-    $pkey = variable_get('archimedes_key_private', '');
-
-    $prikey = openssl_pkey_get_private($pkey);
-    openssl_open($_GET['data'],$uncrypt,$_GET['ekey'], $prikey);
-    openssl_free_key($prikey);
+    if (!$uncrypt = archimedes_server_decrypt($_GET['data'], $_GET['ekey'])) {
+      throw new Exception($token);
+    }
 
     if (!$query = unserialize($uncrypt)) {
       throw new Exception($token);

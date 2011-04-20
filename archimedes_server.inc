@@ -1,6 +1,177 @@
 <?php
 
 /**
+ * Format bytes to a readable size.
+ */
+function archimedes_server_format_bytes($size) {
+    $units = array(' B', ' KB', ' MB', ' GB', ' TB');
+    for ($i = 0; $size >= 1024 && $i < 4; $i++) $size /= 1024;
+    return round($size, 2).$units[$i];
+}
+
+/**
+ * Decrypt data provided the data and ekey.
+ */
+function archimedes_server_decrypt($data, $ekey) {
+  if (!$prikey = openssl_pkey_get_private(variable_get('archimedes_key_private', FALSE))) {
+    return FALSE;
+  }
+  openssl_open($data,$output,$ekey, $prikey);
+  openssl_free_key($prikey);
+  return $output;
+}
+
+/**
+ * Process an XML document into a site report.
+ */
+function archimedes_server_process_document($xml) {
+  module_load_include('inc', 'archimedes_server');
+  // create blank node object
+  $node = new stdClass();
+
+  $dom = new DOMDocument();
+  $dom->loadXML($xml);
+
+  // fail if $dom->documentElement not set
+  if (!isset($dom->documentElement)) {
+    return;
+  }
+
+  // Get unique identifier and check if in system
+  $id = $dom->documentElement->getAttribute('id');
+  $type = $dom->documentElement->getAttribute('type');
+  $author = $dom->documentElement->getAttribute('author');
+  $datetime = $dom->documentElement->getAttribute('datetime');
+
+  // ignore if content type does not exist
+  if (!$node_type = content_types($type)) {
+    watchdog('Archimedes', "Archimedes doesn't not currently support $type.", array(), WATCHDOG_ERROR);
+    return;
+  }
+
+  // The user may not yet exist so create the user
+  // but do not activate the user.
+  $uid = archimedes_server_user_save($author);
+
+  // check if there is a node with unique id already
+  $field = content_fields('field_unique_hash', $type);
+  $db_info = content_database_info($field);
+  if ($nid = db_result(db_query(sprintf("SELECT type.nid FROM {content_type_%s} type LEFT JOIN {".$db_info['table']."} hash ON type.vid=hash.vid WHERE hash.field_unique_hash_value = '%s' LIMIT 1", $type, $id)))) {
+    $node = node_load(array('nid' => $nid));
+    $node->revision = TRUE;
+  }
+  else {
+    $node->type = $node_type['type'];
+    $node->created = time();
+    $node->status = 1; //published
+    $node->promote = 0;
+    $node->sticky = 0;
+    $node->uid = $uid;
+    $node->comment = variable_get('comment_' . $type, 2);
+    $node->field_unique_hash = array(0 => array('value' => $id));
+  }
+
+  // Attempt to parse the XML into a node. Any failure to parse
+  // will throw an exception in which case we will not try to
+  // save the node.
+  try {
+    foreach($dom->getElementsByTagName('field') as $item) {
+      $fid = $item->getAttribute('id');
+      // non cck fields
+      if ($fid == 'title' || $fid == 'body') {
+        $node->{$fid} = trim($item->nodeValue);
+        return;
+      }
+
+      // If content type has no record of field id
+      // then do not attempt to save it.
+      if (!$field = $node_type['fields'][$fid]) {
+        return;
+      }
+
+      $values = array();
+      foreach ($item->getElementsByTagName('value') as $value) {
+        // Check for plugins being used.
+        $plugins = array();
+        foreach ($value->attributes as $v) {
+          $plugins[$v->namespaceURI] = strtr($v->namespaceURI, array('monitor-plugin:' => ''));
+        }
+        $values[] = archimedes_server_run_plugins($plugins, $field, $value);
+      }
+
+      //attach values to node field
+      $node->{$fid} = $values;
+    }
+
+    // collect screenshot of website if not already saved.
+    if (archimedes_server_check_webkit() && !isset($node->field_thumbnail[0]) && isset($node->field_servername[0]['url'])) {
+      try {
+        $filename = preg_replace("/[^a-zA-Z0-9]/", "", $node->title) . '.png';
+        $filepath = file_directory_temp() . '/' . $filename;
+        $files_directory = archimedes_find_root() . '/' . file_directory_path();
+        $cmd = "python " . dirname(__FILE__) . "/python-webkit2png/webkit2png.py --log=" . $files_directory . "/webkit2png.log -x 1024 768 -g 1024 768 -o $filepath -w 1 %s";
+        archimedes_server_shell_exec($cmd, $node->field_servername[0]['url']);
+        if (!file_exists($filepath)) {
+          watchdog("Archimedes", "Server failed to take screenshot of site %url", array("%url" => $node->field_servername[0]['url']), WATCHDOG_ERROR);
+          // Exit early.
+          throw new Exception();
+        }
+
+        $max_width = 800;
+        $max_height = 600;
+
+        if (module_exists('imageapi') && imageapi_default_toolkit()) {
+          $res = imageapi_image_open($filepath);
+          imageapi_image_scale($res, $max_width, $max_height);
+          imageapi_image_close($res);
+        }
+        // Try to resize the image to fit the dimensions.
+        elseif (image_get_toolkit()) {
+          image_scale($filepath, $filepath, $max_width, $max_height);
+        }
+
+        $field = field_file_save_file($filepath, array(),file_directory_path().'/thumbs');
+
+        // Generate imagecache thumbnail
+        $presetname = 'SiteThumb';
+        if ($preset = imagecache_preset_by_name($presetname)) {
+          $dst = imagecache_create_path($presetname, $field['filepath']);
+          if (!file_exists($dst)) {
+            imagecache_build_derivative($preset['actions'], $field['filepath'], $dst);
+          }
+        }
+
+        $node->field_thumbnail = array(0 => $field);
+      }
+      catch (Exception $e) {}
+    }
+
+    // Record the time of report import.
+    $update = explode('+', date('c',strtotime($datetime))); // convert back to UTC timezone
+    $node->field_last_update = array(0 => array('value' => $update[0]));
+
+    // save now so hooks have access to the nid if needed
+    node_save($node);
+    $node->revision = FALSE;
+
+    // allow other modules to modify node before final save
+    drupal_alter('archimedes_site', $node, 'pre');
+
+    // save node after hooks
+    node_save($node);
+
+    // allow other modules to modify node after final save
+    drupal_alter('archimedes_site', $node, 'post');
+
+  }
+  catch (Exception $e) {
+    watchdog('Archimedes', "Cannot import report into node: %reason", array("%reason" => $e->getMessage()), WATCHDOG_ERROR);
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/**
  * Parse xml values through any defined plugins
  */
 function archimedes_server_run_plugins($plugins, $field, $value) {

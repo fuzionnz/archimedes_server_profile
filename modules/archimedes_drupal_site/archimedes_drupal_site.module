@@ -221,7 +221,7 @@ function archimedes_drupal_site_check_modules($node){
     $header = "<h4>Security Updates for $node->title</h4><ul>";
     array_unshift($body, $header);
     $users = $node->field_users;
-    $emails = archimedes_server_get_role_emails($users, $security_roles);
+    $emails = archimedes_observer_get_role_emails($users, $security_roles);
     if (!empty($emails)) {
       $from = variable_get('archimedes_server_email','archimedes@catalyst.net.nz');
       $message = array(
