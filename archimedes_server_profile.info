@@ -1,6 +1,7 @@
 name = Archimedes Server
 description = Passive Application Monitoring tool for web applications
 core = 6.x
+theme = cube
 
 ; Profile dependancies
 dependencies[] = admin

@@ -57,3 +57,7 @@ projects[archimedes_server][subdir] = "custom"
 ; Archimedes Client Library
 libraries[archimedes][download][type] = "file"
 libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Library/raw/master/php/archimedes.class.php
+
+; Theme
+projects[] = tao
+projects[] = rubik
