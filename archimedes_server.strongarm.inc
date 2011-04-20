@@ -8,6 +8,13 @@ function archimedes_server_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'comment_anonymous_application';
+  $strongarm->value = 0;
+
+  $export['comment_anonymous_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'comment_anonymous_host';
   $strongarm->value = 0;
 
@@ -19,6 +26,20 @@ function archimedes_server_strongarm() {
   $strongarm->value = 0;
 
   $export['comment_anonymous_sla'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'comment_application';
+  $strongarm->value = '0';
+
+  $export['comment_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'comment_controls_application';
+  $strongarm->value = '3';
+
+  $export['comment_controls_application'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
@@ -36,6 +57,13 @@ function archimedes_server_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'comment_default_mode_application';
+  $strongarm->value = '4';
+
+  $export['comment_default_mode_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'comment_default_mode_host';
   $strongarm->value = '4';
 
@@ -47,6 +75,13 @@ function archimedes_server_strongarm() {
   $strongarm->value = '4';
 
   $export['comment_default_mode_sla'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'comment_default_order_application';
+  $strongarm->value = '1';
+
+  $export['comment_default_order_application'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
@@ -64,6 +99,13 @@ function archimedes_server_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'comment_default_per_page_application';
+  $strongarm->value = '50';
+
+  $export['comment_default_per_page_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'comment_default_per_page_host';
   $strongarm->value = '50';
 
@@ -75,6 +117,13 @@ function archimedes_server_strongarm() {
   $strongarm->value = '50';
 
   $export['comment_default_per_page_sla'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'comment_form_location_application';
+  $strongarm->value = '0';
+
+  $export['comment_form_location_application'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
@@ -99,6 +148,13 @@ function archimedes_server_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'comment_preview_application';
+  $strongarm->value = '1';
+
+  $export['comment_preview_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'comment_preview_host';
   $strongarm->value = '1';
 
@@ -120,6 +176,13 @@ function archimedes_server_strongarm() {
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'comment_subject_field_application';
+  $strongarm->value = '1';
+
+  $export['comment_subject_field_application'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'comment_subject_field_host';
   $strongarm->value = '1';
 
@@ -131,6 +194,22 @@ function archimedes_server_strongarm() {
   $strongarm->value = '0';
 
   $export['comment_subject_field_sla'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'content_extra_weights_application';
+  $strongarm->value = array(
+    'title' => '-5',
+    'body_field' => '2',
+    'revision_information' => '3',
+    'author' => '4',
+    'options' => '5',
+    'comment_settings' => '7',
+    'menu' => '1',
+    'path' => '6',
+  );
+
+  $export['content_extra_weights_application'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
@@ -161,6 +240,15 @@ function archimedes_server_strongarm() {
   );
 
   $export['content_extra_weights_sla'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'node_options_application';
+  $strongarm->value = array(
+    0 => 'status',
+  );
+
+  $export['node_options_application'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;

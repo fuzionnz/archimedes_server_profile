@@ -66,6 +66,17 @@ function archimedes_server_imagecache_default_presets() {
  */
 function archimedes_server_node_info() {
   $items = array(
+    'application' => array(
+      'name' => t('Application'),
+      'module' => 'features',
+      'description' => '',
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'has_body' => '1',
+      'body_label' => t('Description'),
+      'min_word_count' => '0',
+      'help' => '',
+    ),
     'host' => array(
       'name' => t('Host'),
       'module' => 'features',
