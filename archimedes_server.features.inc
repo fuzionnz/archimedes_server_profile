@@ -91,12 +91,3 @@ function archimedes_server_node_info() {
   );
   return $items;
 }
-
-/**
- * Implementation of hook_views_api().
- */
-function archimedes_server_views_api() {
-  return array(
-    'api' => '2',
-  );
-}
