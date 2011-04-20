@@ -1,5 +1,4 @@
 core = "6.x"
-dependencies[] = "archimedes_server"
 dependencies[] = "content"
 dependencies[] = "context"
 dependencies[] = "ctools"
