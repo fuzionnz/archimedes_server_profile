@@ -11,7 +11,7 @@ class ArchimedesServerPlugin_drupal_module extends ArchimedesServerPlugin_node {
   private $version_field = 'field_mod_version';
 
   public function parse($value) {
-    $this->cache_update($value);
+//    $this->cache_update($value);
     $return = array('vid' => NULL);
     if (!$node = $this->load($value)) {
       $node = $this->create($value);
