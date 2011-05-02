@@ -194,7 +194,7 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
     // Generate listing of blocks from this module, for the admin/block page
     $block = array();
-    $block[0]['info'] = t('Storage Overview');
+//    $block[0]['info'] = t('Storage Overview');
     $block[1]['info'] = t('Administer Monitored Site');
     $block[2]['info'] = t('Host Total Usage');
     $block[3]['info'] = t('Host Usage by Site');

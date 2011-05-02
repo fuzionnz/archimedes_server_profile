@@ -100,23 +100,29 @@ function archimedes_server_process_document($xml) {
         continue;
       }
 
-      // If content type has no record of field id
-      // then do not attempt to save it.
-      if (!$field = $node_type['fields'][$fid]) {
-        continue;
-      }
-
       $values = array();
+
+      // Field handlers process the data provided by the document
+      // and return the nessacary meta data to the node to store.
+      $handler = archimedes_server_field_handler($fid);
       foreach ($item->getElementsByTagName('value') as $value) {
-        // Check for plugins being used.
+
         $plugins = array();
+        // Plugins are attributes added to the element that may
+        // provide more functional meta data about the element.
+        // for example, the data maybe refering to another node
+        // such as a Host. In which case, this element may use a
+        // namespaced attribute set to describe the referenced
+        // host node.
         foreach ($value->attributes as $v) {
-          $plugins[$v->namespaceURI] = strtr($v->namespaceURI, array('monitor-plugin:' => ''));
+          $plugin = strtr($v->namespaceURI, array('monitor-plugin:' => ''));
+          $plugins[$plugin] = $v->namespaceURI;
         }
-        $values[] = archimedes_server_run_plugins($plugins, $field, $value);
+        $handler->setPlugins($plugins);
+        $values[] = $handler->process($value);
       }
 
-      //attach values to node field
+      // Attach values to node field.
       $node->{$fid} = $values;
     }
 
@@ -140,17 +146,9 @@ function archimedes_server_process_document($xml) {
 
     // save now so hooks have access to the nid if needed
     node_save($node);
-    $node->revision = FALSE;
-
-    // allow other modules to modify node before final save
-    drupal_alter('archimedes_site', $node, 'pre');
-
-    // save node after hooks
-    node_save($node);
 
     // allow other modules to modify node after final save
     drupal_alter('archimedes_site', $node, 'post');
-
   }
   catch (Exception $e) {
     watchdog('Archimedes', "Cannot import report into node: %reason", array("%reason" => $e->getMessage()), WATCHDOG_ERROR);
@@ -216,30 +214,42 @@ function archimedes_server_snap_screenshot($url) {
 }
 
 /**
- * Parse xml values through any defined plugins
+ * Retrive a handler for handling an unknown field.
+ *
+ * Archimedes Server itself doesn't use this because it relies on
+ * on CCK and only provides global application meta data. Plugins
+ * on the otherhand have application specific data handling capabilities
+ * and will use hook_archimedes_field_handlers and the handler class
+ * to handle data appropriately.
  */
-function archimedes_server_run_plugins($plugins, $field, $value) {
-  $module_plugins = archimedes_server_get_plugins();
-  $nValue = strtr($value->nodeValue, array(
-    'file://' => '',
-    'mailto:' => '',
-  ));
-  $return = array();
-  switch($field['module']) {
-    case 'link':
-      $return['url'] = $nValue;
-      break;
-    default:
-      $return['value'] = $nValue;
+function archimedes_server_field_handler($fid) {
+  static $handlers;
+  if (empty($handlers)) {
+    foreach (module_implements('archimedes_field_handlers') as $module) {
+      foreach (module_invoke($module, 'archimedes_field_handlers') as $fieldname => $handler) {
+        $handler['module'] = $module;
+        $handlers[$fieldname] = $handler;
+      }
+    }
   }
-  foreach ($plugins as $ns => $plugin) {
-    $result = archimedes_server_plugin_invoke($module_plugins[$plugin], $plugin, $value, $ns);
-    $return = array_merge($return, $result);
+  if (isset($handlers[$fid])) {
+    if (isset($handlers[$fid]['file'])) {
+      include_once drupal_get_path('module', $handlers[$fid]['module']) . '/' . $handlers[$fid]['file'];
+    }
+    $handler = new $handlers[$fid]['handler'];
+    return $handler;
   }
-  return $return;
+  return new ArchimedesServer_Handler();
 }
 
-function archimedes_server_plugin_invoke($module, $plugin, $value, $ns) {
+/**
+ * Load a plugin from a module and parse the XML node.
+ */
+function archimedes_server_plugin_invoke($plugin, $value, $ns) {
+  $plugins = archimedes_server_get_plugins();
+  if (!$module = $plugins[$plugin]) {
+    return FALSE;
+  }
   module_load_include('inc', $module, $module . '.plugins');
   $class = 'ArchimedesServerPlugin_' . str_replace('-', '_', $plugin);
   if (class_exists($class)) {
@@ -355,3 +365,49 @@ abstract class ArchimedesServerPlugin {
 
 }
 
+/**
+ * Definiation of an Archimedes Server Handler.
+ */
+class ArchimedesServer_Handler {
+  
+  protected $plugins;
+
+  public function setPlugins($plugins) {
+    $this->plugins = $plugins;
+  }
+
+  public function process($value) {
+    $return = $this->processPlugins($value);
+    if ($url = parse_url($value->nodeValue)) {
+      switch ($url['scheme']){
+        case 'http':
+        case 'https':
+        case 'ftp':
+        case 'ftps':
+          $return['url'] = $value->nodeValue;
+        default:
+          $return['value'] = $url['path'];
+        break;
+      }
+    }
+    return $return;
+  } 
+
+  protected function processPlugins($value) {
+    $plugins = array();
+    // Generate a list of plugins used on this value.
+    foreach ($value->attributes as $v) {
+      $plugin = strtr($v->namespaceURI, array('monitor-plugin:' => ''));
+      $plugins[$plugin] = $v->namespaceURI;
+    }
+    $plugins = array_filter($plugins);
+
+    // Invoke each plugin.
+    $return = array();
+    foreach ($plugins as $plugin => $ns) {
+      $result = archimedes_server_plugin_invoke($plugin, $value, $ns);
+      $return = array_merge($return, $result);
+    }
+    return $return;
+  }
+}
