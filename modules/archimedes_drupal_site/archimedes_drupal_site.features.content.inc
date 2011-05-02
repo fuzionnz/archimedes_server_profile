@@ -466,32 +466,11 @@ function archimedes_drupal_site_content_default_fields() {
 
   // Translatables
   // Included for use with string extractors like potx.
-  t('Database Host');
-  t('Database Name');
-  t('Database Size');
-  t('Directory Hash');
-  t('Git Hash');
-  t('Git Repositories');
-  t('Last Update');
-  t('Modules');
-  t('Node Count');
   t('Package');
   t('Project');
-  t('Servername');
-  t('Service Level Agreement');
   t('Short Name');
-  t('Site Data Size');
-  t('Site Environment');
   t('Sites');
-  t('Themes');
-  t('Thumbnail');
-  t('Unique Hash');
-  t('User Count');
-  t('Users');
   t('Version');
-  t('Web Root');
-  t('Web Server');
-  t('Webroot Size');
 
   return $fields;
 }
