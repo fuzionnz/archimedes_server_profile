@@ -62,3 +62,6 @@ libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Libr
 ; Theme
 projects[] = tao
 projects[] = rubik
+
+;Includes
+includes[openatrium] = ../openatrium/openatrium.make
