@@ -59,9 +59,5 @@ projects[archimedes_server][subdir] = "custom"
 libraries[archimedes][download][type] = "file"
 libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Library/raw/master/php/archimedes.class.php
 
-; Theme
-projects[] = tao
-projects[] = rubik
-
 ;Includes
 includes[openatrium] = ../openatrium/openatrium.make
