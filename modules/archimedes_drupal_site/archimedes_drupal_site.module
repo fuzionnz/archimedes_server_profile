@@ -99,7 +99,7 @@ function archimedes_drupal_site_archimedes_server_plugins() {
 function archimedes_drupal_site_archimedes_site_alter(&$node, $op) {
 
   if ($op == 'pre' && $version = $node->field_drupal_version[0]['value']) {
-    $terms = taxonomy_get_term_by_name(substr($version,0,1) . '.x');
+    $terms = taxonomy_get_term_by_name('drupal-' . substr($version,0,1) . '.x');
     $term_exists = FALSE;
     foreach ($terms as $term) {
       if ($term->vid == DRUPAL_SITE_MODULE_VID) {
@@ -112,7 +112,7 @@ function archimedes_drupal_site_archimedes_site_alter(&$node, $op) {
       // Create term here.
       $term = array(
         'vid' => DRUPAL_SITE_MODULE_VID,
-        'name' => $term,
+        'name' => 'drupal-' . substr($version,0,1) . '.x',
       );
       taxonomy_save_term($term);
       $terms = array($term);
