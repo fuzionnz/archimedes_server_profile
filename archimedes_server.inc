@@ -63,7 +63,7 @@ function archimedes_server_process_document($xml) {
 
   // Get unique identifier and check if in system
   $node->field_unique_hash = array(array('value' => $dom->documentElement->getAttribute('id')));
-  $node->taxonomy['tags'][$vocab->vid][] = $dom->documentElement->getAttribute('type');
+
   $datetime = $dom->documentElement->getAttribute('datetime');
 
   if ($existing_node = archimedes_server_load_application($node->field_unique_hash[0]['value'])) {
@@ -71,17 +71,9 @@ function archimedes_server_process_document($xml) {
     // Make sure we create a new revision rather than overwriting the existing one.
     // This is so we can track changes over a period of time.
     $node->revision = TRUE;
-
-    // Load the taxonomy tags.
-    $tags = array();
-    foreach ($node->taxonomy as $term) {
-      if ($term->vid != $vocab->vid) {
-        continue;
-      }
-      $tags[$vocab->vid][] = $term->name;
-    }
-    $node->taxonomy['tags'] = $tags;
   }
+
+  archimedes_server_set_term($node, $dom->documentElement->getAttribute('type'), $vocab);
 
   // Grab the field information about the application content type.
   // This allows us to dynamically expand the application content
@@ -137,12 +129,6 @@ function archimedes_server_process_document($xml) {
     // Record the time of report import.
     $update = explode('+', date('c',strtotime($datetime))); // convert back to UTC timezone
     $node->field_last_update = array(0 => array('value' => $update[0]));
-
-    if (is_array($node->taxonomy['tags'])) {
-      foreach ($node->taxonomy['tags'] as $vid => $terms) {
-        $node->taxonomy['tags'][$vid] = implode(', ', $terms);
-      }
-    }
 
     // allow other modules to modify node before save
     drupal_alter('archimedes_site', $node, 'pre');
@@ -276,6 +262,29 @@ function archimedes_server_get_plugins() {
     }
   }
   return $plugins;
+}
+
+/**
+ * Set a term to a node
+ */
+function archimedes_server_set_term(&$node, $name, $vocab) {
+  foreach (taxonomy_get_term_by_name($name) as $term) {
+    if ($term->vid == $vocab->vid) {
+      $term_type = $term;
+      break;
+    }
+  }
+  if (isset($term_type) && !isset($node->taxonomy[$term_type->tid])) {
+    $node->taxonomy[$term_type->tid] = $term_type;
+  }
+  elseif (!isset($term_type)) {
+    $form_values = array(
+      'name' => $name,
+      'vid' => $vocab->vid,
+    );
+    taxonomy_save_term($form_values);
+    $node->taxonomy[$form_values['tid']] = taxonomy_get_term($form_values['tid']);
+  }
 }
 
 /**

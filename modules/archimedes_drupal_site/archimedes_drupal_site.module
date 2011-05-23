@@ -99,27 +99,8 @@ function archimedes_drupal_site_archimedes_server_plugins() {
 function archimedes_drupal_site_archimedes_site_alter(&$node, $op) {
 
   if ($op == 'pre' && $version = $node->field_drupal_version[0]['value']) {
-    $terms = taxonomy_get_term_by_name('drupal-' . substr($version,0,1) . '.x');
-    $term_exists = FALSE;
-    foreach ($terms as $term) {
-      if ($term->vid == DRUPAL_SITE_MODULE_VID) {
-        $term_exists = TRUE;
-        $terms = array($term);
-        break;
-      }
-    }
-    if (!$term_exists) {
-      // Create term here.
-      $term = array(
-        'vid' => DRUPAL_SITE_MODULE_VID,
-        'name' => 'drupal-' . substr($version,0,1) . '.x',
-      );
-      taxonomy_save_term($term);
-      $terms = array($term);
-    }
-    node_save($node);
-
-    taxonomy_node_save($node,$terms);
+    $vocab = archimedes_server_get_vocabulary(ARCHIMEDES_APP_CATEGORIES);
+    archimedes_server_set_term($node, 'drupal-' . substr($version,0,1) . '.x', $vocab);
   }
   //module_load_include('inc', 'archimedes_drupal_site');
   //archimedes_drupal_site_check_modules($node);
