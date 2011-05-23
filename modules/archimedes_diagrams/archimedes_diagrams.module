@@ -151,10 +151,16 @@ function archimedes_diagram_view_stats($delta, $settings) {
         $min = db_result(db_query("SELECT value FROM {archimedes_dataset} WHERE title = '%s' AND vid = %d", $row->title, $row->min));
         $max = db_result(db_query("SELECT value FROM {archimedes_dataset} WHERE title = '%s' AND vid = %d", $row->title, $row->max));
 
-        $class = round(($max / $min) / 100, 2) > 0 ? 'positive' : 'negative';
+        $class = '';
+        $data = 0;
+        // only do the calculations if there won't be any division by 0
+        if ($min != 0) {
+          $class = round(($max / $min) / 100, 2) > 0 ? 'positive' : 'negative';
+          $data = round(($max / $min) / 100, 2);
+        }
         $rows[] = array(
           array('header' => TRUE, 'data' => $row->title),
-          array('data' => round(($max / $min) / 100, 2) . '%', 'class' => $class),
+          array('data' => $data . '%', 'class' => $class),
         );
       }
       return theme('table', array(), $rows);
