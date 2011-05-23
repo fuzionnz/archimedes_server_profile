@@ -1,5 +1,5 @@
 core = "6.x"
-dependencies[] = "archimedes_server"
+; dependencies[] = "archimedes_server"
 dependencies[] = "imagecache_canvasactions"
 description = "Provide diagrams and reports for Archimedes."
 name = "Archimedes Diagrams"

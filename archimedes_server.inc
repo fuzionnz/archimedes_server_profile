@@ -144,6 +144,9 @@ function archimedes_server_process_document($xml) {
       }
     }
 
+    // allow other modules to modify node before save
+    drupal_alter('archimedes_site', $node, 'pre');
+
     // save now so hooks have access to the nid if needed
     node_save($node);
 

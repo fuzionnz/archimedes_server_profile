@@ -44,11 +44,6 @@ function archimedes_server_menu() {
  * @TODO #7: Show a warning if archimedes_server_check_webkit() fails here.
  */
 function archimedes_server_admin() {
-  $graphs = array();
-  $apis = charts_graphs_apis();
-  foreach ($apis as $api) {
-    $graphs[$api->name] = $api->nice_name;
-  }
   $form = array();
   $form['archimedes_mail'] = array(
     '#type' => 'fieldset',
@@ -88,17 +83,6 @@ function archimedes_server_admin() {
     '#title' => 'SSL enabled',
     '#default_value' => variable_get('archimedes_mail_ssl', FALSE),
     '#description' => 'Check this box if the email uses pop3 over SSL',
-  );
-  $form['archimedes_ui'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('User Interface'),
-  );
-  $form['archimedes_ui']['archimedes_ui_graph'] = array(
-    '#type' => 'select',
-    '#title' => 'Charts and Graphs Library',
-    '#default_value' => variable_get('archimedes_ui_graph', 'google-charts'),
-    '#description' => 'Select the graphing library to use. Enable more on the modules page. Warning: Archimedes has been written to use Google Charts, other libraries may not function as well.',
-    '#options' => $graphs
   );
   $form['archimedes_keys'] = array(
     '#type' => 'fieldset',

@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implementation of hook_archimedes_site
+ */
+function archimedes_og_archimedes_site_alter(&$node, $op) {
+  if ($op == 'pre') {
+    $lookup_hash = $node->field_common_hash[0]['value'];
+    $nid = db_result(db_query("SELECT n.nid FROM {content_field_common_hash} h INNER JOIN {node} n on n.nid = h.nid WHERE n.type = 'group' AND field_common_hash_value = '%s'", $lookup_hash));
+    if (!$nid) {
+      // Maybe type find a group with the same name?
+      if ($group = node_load(array('title' => $node->title, 'type' => 'group'))) {
+        $nid = $group->nid;
+        if (!$group->field_common_hash[0]['value']) {
+          $group->field_common_hash[0]['value'] = $lookup_hash;
+          node_save($group);
+        }
+      }
+      else {
+        $group = (object) array(
+          'title' => $node->title,
+          'og_description' => $node->body,
+          'type' =>  'group',
+          'field_common_hash' => array(array('value' => $lookup_hash)),
+          'status' => 1,
+          'purl' => $node->field_dbname[0]['value'],
+        );
+        node_save($group);
+        $nid = $group->nid;
+      }
+    }
+    $node->og_groups[$nid] = $nid;
+    $node->og_public = 1;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter()
+ */
+function archimedes_og_form_alter(&$form, $form_state, $form_id) {
+}
