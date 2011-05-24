@@ -268,12 +268,8 @@ function archimedes_server_get_plugins() {
  * Set a term to a node
  */
 function archimedes_server_set_term(&$node, $name, $vocab) {
-  foreach (taxonomy_get_term_by_name($name) as $term) {
-    if ($term->vid == $vocab->vid) {
-      $term_type = $term;
-      break;
-    }
-  }
+  $rs = db_query("SELECT t.tid, t.* FROM {term_data} t WHERE LOWER(t.name) = LOWER('%s') AND t.vid = %d", trim($name), $vocab->vid);
+  $term_type = db_fetch_object($rs) ? db_fetch_object($rs) : NULL;
   if (isset($term_type) && !isset($node->taxonomy[$term_type->tid])) {
     $node->taxonomy[$term_type->tid] = $term_type;
   }
