@@ -81,6 +81,8 @@ function archimedes_drupal_site_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
  * Implementation of hook_cron().
  */
 function archimedes_drupal_site_cron() {
+  include_once dirname(__FILE__) . '/archimedes_drupal_site.inc';
+
   archimedes_drupal_site_project_updates();
 }
 
