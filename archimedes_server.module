@@ -84,6 +84,12 @@ function archimedes_server_admin() {
     '#default_value' => variable_get('archimedes_mail_ssl', FALSE),
     '#description' => 'Check this box if the email uses pop3 over SSL',
   );
+  $form['archimedes_mail']['archimedes_server_delete_emails'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Delete emails once received',
+    '#description' => 'If emails are not deleted then they will be imported again and again. This is useful for debugging',
+    '#default_value' => variable_get('archimedes_server_delete_emails', TRUE), 
+  );
   $form['archimedes_keys'] = array(
     '#type' => 'fieldset',
     '#title' => t('SSL Public Key'),
