@@ -104,6 +104,7 @@ function archimedes_server_admin() {
  */
 function archimedes_server_form_validate_inbox($form, $form_state) {
   $values = $form_state['values'];
+  include_once dirname(__FILE__) . '/archimedes_server.mail.inc';
   if (!archimedes_server_open_inbox($values['archimedes_mail_server'], $values['archimedes_mail_port'], $values['archimedes_mail_user'], $values['archimedes_mail_password'], $values['archimedes_mail_ssl'])) {
     form_set_error('archimedes_mail', t('Failed to login to email inbox with existing credentials.'));
     return FALSE;
