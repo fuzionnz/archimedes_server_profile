@@ -59,7 +59,6 @@ function archimedes_server_check_inbox() {
       }
       $id++;
     }
-    // TODO: Add a UI interface to this setting.
     if (variable_get('archimedes_server_delete_emails', TRUE)) {
       imap_delete($mbox, $i);
     }
@@ -75,7 +74,9 @@ function archimedes_server_check_inbox() {
     }
     $data[] = $xml;
   } 
-  imap_expunge($mbox); //uncomment to delete from mailbox. Leave commented during testing
+  if (variable_get('archimedes_server_delete_emails', TRUE)) {
+    imap_expunge($mbox); //uncomment to delete from mailbox. Leave commented during testing
+  }
   imap_close($mbox);
 
   return $data;
