@@ -1,6 +1,6 @@
 <?php
 
-define('ARCHIMEDES_SYSTEM_UID', 2);
+define('ARCHIMEDES_SYSTEM_UID', variable_get('archimedes_server_system_uid', 1));
 define('ARCHIMEDES_APP_CATEGORIES', 'app_categories');
 
 require_once dirname(__FILE__) . '/archimedes_server.features.inc';

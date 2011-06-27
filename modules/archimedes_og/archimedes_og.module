@@ -24,6 +24,7 @@ function archimedes_og_archimedes_site_alter(&$node, $op) {
           'field_common_hash' => array(array('value' => $lookup_hash)),
           'status' => 1,
           'purl' => $node->field_dbname[0]['value'],
+          'uid' => variable_get('archimedes_server_system_uid', 1),
         );
         node_save($group);
         $nid = $group->nid;
