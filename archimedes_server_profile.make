@@ -60,4 +60,4 @@ libraries[archimedes][download][type] = "file"
 libraries[archimedes][download][url] = https://github.com/fiasco/Archimedes-Library/raw/master/php/archimedes.class.php
 
 ;Includes
-includes[openatrium] = ../openatrium/openatrium.make
+;includes[openatrium] = ../openatrium/openatrium.make
