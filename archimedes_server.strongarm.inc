@@ -199,34 +199,20 @@ function archimedes_server_strongarm() {
   $strongarm->api_version = 1;
   $strongarm->name = 'content_extra_weights_application';
   $strongarm->value = array(
+    'og_nodeapi' => '0',
     'title' => '-5',
-    'body_field' => '7',
-    'revision_information' => '8',
-    'author' => '9',
-    'options' => '10',
-    'comment_settings' => '12',
-    'menu' => '6',
+    'body_field' => '5',
+    'revision_information' => '6',
+    'author' => '7',
+    'options' => '9',
+    'comment_settings' => '10',
+    'menu' => '4',
     'taxonomy' => '-2',
-    'path' => '11',
+    'book' => '8',
+    'attachments' => '11',
   );
 
   $export['content_extra_weights_application'] = $strongarm;
-  $strongarm = new stdClass;
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'content_extra_weights_host';
-  $strongarm->value = array(
-    'title' => '-5',
-    'body_field' => '-4',
-    'revision_information' => '1',
-    'author' => '0',
-    'options' => '2',
-    'comment_settings' => '4',
-    'menu' => '-1',
-    'path' => '3',
-  );
-
-  $export['content_extra_weights_host'] = $strongarm;
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
@@ -277,5 +263,12 @@ function archimedes_server_strongarm() {
   $strongarm->value = 1;
 
   $export['tagging_inject_1'] = $strongarm;
+  $strongarm = new stdClass;
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'upload_application';
+  $strongarm->value = '1';
+
+  $export['upload_application'] = $strongarm;
   return $export;
 }

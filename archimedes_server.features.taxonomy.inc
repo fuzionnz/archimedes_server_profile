@@ -10,10 +10,10 @@ function archimedes_server_taxonomy_default_vocabularies() {
       'description' => '',
       'help' => '',
       'relations' => '1',
-      'hierarchy' => '0',
-      'multiple' => '0',
+      'hierarchy' => '1',
+      'multiple' => '1',
       'required' => '0',
-      'tags' => '1',
+      'tags' => '0',
       'module' => 'features_app_categories',
       'weight' => '0',
       'nodes' => array(

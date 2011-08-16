@@ -17,6 +17,112 @@ function archimedes_server_ui_views_default_views() {
   $view->api_version = 2;
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->override_option('fields', array(
+    'title' => array(
+      'label' => 'Title',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'link_to_node' => 1,
+      'spaces' => array(
+        'frontpage' => 0,
+        'type' => 'spaces_og',
+      ),
+      'exclude' => 0,
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+      'relationship' => 'none',
+    ),
+    'field_site_env_value' => array(
+      'label' => 'Environment',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'link_to_node' => 0,
+      'label_type' => 'widget',
+      'format' => 'default',
+      'multiple' => array(
+        'group' => TRUE,
+        'multiple_number' => '',
+        'multiple_from' => '',
+        'multiple_reversed' => FALSE,
+      ),
+      'exclude' => 0,
+      'id' => 'field_site_env_value',
+      'table' => 'node_data_field_site_env',
+      'field' => 'field_site_env_value',
+      'relationship' => 'none',
+    ),
+    'changed' => array(
+      'label' => 'Updated date',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'date_format' => 'small',
+      'custom_date_format' => '',
+      'reldate' => '0',
+      'exclude' => 0,
+      'id' => 'changed',
+      'table' => 'node',
+      'field' => 'changed',
+      'relationship' => 'none',
+    ),
+  ));
   $handler->override_option('sorts', array(
     'title' => array(
       'order' => 'ASC',
@@ -51,6 +157,20 @@ function archimedes_server_ui_views_default_views() {
       'field' => 'type',
       'relationship' => 'none',
     ),
+    'current' => array(
+      'operator' => '=',
+      'value' => '',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'current',
+      'table' => 'spaces',
+      'field' => 'current',
+      'relationship' => 'none',
+    ),
   ));
   $handler->override_option('access', array(
     'type' => 'none',
@@ -59,7 +179,33 @@ function archimedes_server_ui_views_default_views() {
     'type' => 'none',
   ));
   $handler->override_option('title', 'Applications');
-  $handler->override_option('row_plugin', 'node');
+  $handler->override_option('style_plugin', 'table');
+  $handler->override_option('style_options', array(
+    'grouping' => '',
+    'override' => 1,
+    'sticky' => 0,
+    'order' => 'asc',
+    'columns' => array(
+      'title' => 'title',
+      'field_site_env_value' => 'field_site_env_value',
+      'changed' => 'changed',
+    ),
+    'info' => array(
+      'title' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'field_site_env_value' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'changed' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+    ),
+    'default' => 'field_site_env_value',
+  ));
   $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->override_option('path', 'applications');
   $handler->override_option('menu', array(
@@ -67,7 +213,7 @@ function archimedes_server_ui_views_default_views() {
     'title' => 'Applications',
     'description' => '',
     'weight' => '1',
-    'name' => 'primary-links',
+    'name' => 'features',
   ));
   $handler->override_option('tab_options', array(
     'type' => 'none',
@@ -76,6 +222,9 @@ function archimedes_server_ui_views_default_views() {
     'weight' => 0,
     'name' => 'navigation',
   ));
+  $handler = $view->new_display('block', 'Block', 'block_1');
+  $handler->override_option('block_description', '');
+  $handler->override_option('block_caching', -1);
 
   $views[$view->name] = $view;
 

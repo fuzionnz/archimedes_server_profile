@@ -15,8 +15,10 @@ function archimedes_diagrams_menu() {
     'title' => 'System Architecture',
     'page callback' => 'archimedes_diagrams_system_architecture',
     'page arguments' => array(1),
-    'access arguments' => array('access system architecture diagrams'),
+    'access arguments' => array(1, 'access system architecture diagrams'),
+    'access callback' => 'archimedes_diagrams_node_is_application',
     'file' => 'archimedes_diagrams.pages.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
@@ -36,6 +38,7 @@ function archimedes_diagrams_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'load':
       if ($node->type == 'application') {
+        $node->archimedes_datasets = array();
         $rs = db_query("SELECT * FROM {archimedes_dataset} WHERE vid = %d", $node->vid);
         while ($row = db_fetch_object($rs)) {
           $node->archimedes_datasets[$row->fid] = $row->fid;
@@ -134,6 +137,9 @@ function archimedes_diagrams_theme($existing, $type, $theme, $path) {
     'archimedes_diagram' => array(
       'arguments' => array('params' => array()),
     ),
+    'server_icon' => array(
+      'arguments' => array('node' => NULL),
+    ),
   );
 }
 
@@ -162,6 +168,9 @@ function archimedes_diagram_view_stats($delta, $settings) {
           array('header' => TRUE, 'data' => $row->title),
           array('data' => $data . '%', 'class' => $class),
         );
+      }
+      if (empty($rows)) {
+        return '';
       }
       return theme('table', array(), $rows);
     case 'storage':
@@ -216,6 +225,9 @@ function archimedes_diagram_view_dataset($delta, $settings) {
   foreach ($label_x as $key => $data) {
     $dataset[] = implode(',', $label_y[$key]);
   }
+  if (!count($label_y)) {
+    return '';
+  }
   $params = archimedes_diagram_chart_defaults($settings, count($label_y));
   $params['chdl'] = implode('|', array_keys($label_y));
   $params['chd'] = 't:' . implode('|', $dataset);
@@ -266,4 +278,27 @@ function archimedes_diagrams_form($form, $settings) {
     '#default_value' => $settings['diagram_date_end'],
   );
   return $form;
+}
+
+/**
+ * Theme a server from a node.
+ */
+function theme_server_icon($node, $type) {
+  $html = '<div class="server"><div id="' . $node->type . '-' . $node->nid . '" class="server-' . $type . '">';
+  $src = drupal_get_path('module', 'archimedes_diagrams') . '/icons/osa_server_' . $type . '.png';
+  $html .= theme('imagecache', 'AttachmentThumbnail', $src, "$type server", $node->title);
+  $title = $node->title;
+  if (strlen($title) > 10) {
+    $title = array_shift(explode('.', $title));
+  }
+  $html .= '<h3>' . l($title, 'node/' . $node->nid, array('attributes' => array('title' => $node->title))) . '</h3>';
+  $html .= '</div></div>';
+  return $html;
+}
+
+function archimedes_diagrams_node_is_application($node, $perm) {
+  if ($node->type == 'application') {
+    return user_access($perm);
+  }
+  return FALSE;
 }

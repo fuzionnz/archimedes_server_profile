@@ -12,9 +12,9 @@ function archimedes_server_content_default_fields() {
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '12',
-      'parent' => 'group_reference',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -43,7 +43,7 @@ function archimedes_server_content_default_fields() {
     ),
     'widget_active' => '1',
     'type' => 'text',
-    'required' => '1',
+    'required' => '0',
     'multiple' => '0',
     'module' => 'text',
     'active' => '1',
@@ -75,9 +75,9 @@ function archimedes_server_content_default_fields() {
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '3',
-      'parent' => 'group_database',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -138,16 +138,16 @@ function archimedes_server_content_default_fields() {
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '2',
-      'parent' => 'group_database',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
-        'format' => 'default',
+        'format' => 'hidden',
         'exclude' => 0,
       ),
       'full' => array(
-        'format' => 'default',
+        'format' => 'hidden',
         'exclude' => 0,
       ),
       '4' => array(
@@ -204,9 +204,9 @@ function archimedes_server_content_default_fields() {
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '1',
-      'parent' => 'group_database',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -269,7 +269,7 @@ function archimedes_server_content_default_fields() {
       'weight' => '-4',
       'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'hidden',
       ),
       'teaser' => array(
         'format' => 'siteThumbMini_linked',
@@ -336,7 +336,7 @@ function archimedes_server_content_default_fields() {
       'weight' => '-3',
       'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -469,9 +469,9 @@ Development',
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '2',
-      'parent' => 'group_metrics',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -532,9 +532,9 @@ Development',
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '3',
-      'parent' => 'group_metrics',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -595,9 +595,9 @@ Development',
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '11',
-      'parent' => 'group_reference',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -658,9 +658,9 @@ Development',
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => '1',
-      'parent' => 'group_metrics',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
         'format' => 'default',
@@ -721,16 +721,16 @@ Development',
     'type_name' => 'application',
     'display_settings' => array(
       'weight' => 0,
-      'parent' => 'group_metrics',
+      'parent' => '',
       'label' => array(
-        'format' => 'above',
+        'format' => 'inline',
       ),
       'teaser' => array(
-        'format' => 'default',
+        'format' => 'hidden',
         'exclude' => 0,
       ),
       'full' => array(
-        'format' => 'default',
+        'format' => 'hidden',
         'exclude' => 0,
       ),
       '4' => array(

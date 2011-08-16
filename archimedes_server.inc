@@ -237,7 +237,8 @@ function archimedes_server_field_handler($fid) {
 function archimedes_server_plugin_invoke($plugin, $value, $ns) {
   $plugins = archimedes_server_get_plugins();
   if (!$module = $plugins[$plugin]) {
-    return FALSE;
+    watchdog('Archimedes Server', 'No plugin for specified field: ' . $plugin, array(), WATCHDOG_WARNING);
+    return array();
   }
   module_load_include('inc', $module, $module . '.plugins');
   $class = 'ArchimedesServerPlugin_' . str_replace('-', '_', $plugin);

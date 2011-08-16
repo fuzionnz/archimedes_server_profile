@@ -126,12 +126,15 @@ function archimedes_server_post_xml() {
     die;
   }
   require_once dirname(__FILE__) . '/archimedes_server.inc';
-  $xml = archimedes_server_decrypt(base64_decode($data->data), base64_decode($data->key));
-
   $return = array(
     'success' => 1,
   );
-  if (!archimedes_server_process_document($xml)) {
+  if (!$xml = archimedes_server_decrypt(base64_decode($data->data), base64_decode($data->key))) {
+    $return['success'] = 0;
+    $return['message'] = 'Failed to decrypt data.';
+  }
+  elseif (!archimedes_server_process_document($xml)) {
+    $return['message'] = 'Failed to process decrypted data.';
     $return['success'] = 0;
   }
   print json_encode($return);

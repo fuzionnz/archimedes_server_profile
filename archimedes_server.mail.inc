@@ -32,6 +32,18 @@ function archimedes_server_check_inbox() {
   $data = array();
   for($i = 1; $i <= imap_num_msg($mbox); $i++) {
     $struct = imap_fetchstructure($mbox, $i);
+    $header = imap_header($mbox, $i);
+    watchdog('Archimedes', 'Received Email: %subject [%from]', array(
+      '%subject' => $header->subject,
+      '%from' => $header->fromaddress,
+    ));
+    if (!isset($struct->parts)) {
+      watchdog('Archimedes', 'Email from %from is invalid with subtype "%type". Cannot import', array(
+        '%from' => $header->fromaddress,
+        '%type' => $struct->subtype,
+      ));
+      continue;
+    }
 
     $id = 1;
     $xml = '';
@@ -72,6 +84,7 @@ function archimedes_server_check_inbox() {
       watchdog("Archimedes","An encryted update was recieved from %from, but Archimedes Server was unable to decrypt it. It is likely the saved public key is incorrect.", array('%from' => $header->fromaddress), WATCHDOG_ERROR);
       continue;
     }
+    watchdog('Archimedes', 'Mail successfully decrypted');
     $data[] = $xml;
   } 
   if (variable_get('archimedes_server_delete_emails', TRUE)) {

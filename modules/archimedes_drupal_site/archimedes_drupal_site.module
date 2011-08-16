@@ -31,11 +31,21 @@ function archimedes_drupal_site_has_module_tab($node, $vid = FALSE) {
   if ($vid) {
     $node = node_load($node, $vid);
   }
-  if (isset($node->field_drupal_mod) && !empty($node->field_drupal_mod)) {
-    return TRUE;
-  }
-  return FALSE;
+  return db_result(db_query("SELECT COUNT(*) FROM {archimedes_drupal_modules} WHERE vid = %d", $node->vid));
 }
+
+/**
+ * Get the module references by type.
+ */
+function archimedes_drupal_site_load_references($node) {
+  $refs = array();
+  $rs = db_query("SELECT n.title, a.type, a.cvid FROM {node_revisions} n INNER JOIN {archimedes_drupal_modules} a ON n.vid = a.cvid WHERE a.vid = %d ORDER BY n.title ASC", $node->vid);
+  while ($row = db_fetch_object($rs)) {
+    $refs[$row->type][] = array('vid' => $row->cvid, 'value' => $row->title);
+  }
+  return $refs;
+}
+
 
 /**
  * Implementation of hook_nodeapi().
@@ -43,20 +53,26 @@ function archimedes_drupal_site_has_module_tab($node, $vid = FALSE) {
 function archimedes_drupal_site_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'load':
-      $rs = db_query("SELECT n.title, a.type, a.cvid FROM {node_revisions} n INNER JOIN {archimedes_drupal_modules} a ON n.vid = a.cvid WHERE a.vid = %d ORDER BY n.title ASC", $node->vid);
-      while ($row = db_fetch_object($rs)) {
-        $node->{$row->type}[] = array('vid' => $row->cvid, 'value' => $row->title);
-      }
+      //$rs = db_query("SELECT n.title, a.type, a.cvid FROM {node_revisions} n INNER JOIN {archimedes_drupal_modules} a ON n.vid = a.cvid WHERE a.vid = %d ORDER BY n.title ASC", $node->vid);
+      //while ($row = db_fetch_object($rs)) {
+      //  $node->{$row->type}[] = array('vid' => $row->cvid, 'value' => $row->title);
+      //}
       if (strpos($node->type, 'drupal') !== FALSE) {
         $rs = db_query("SELECT vid, type FROM {archimedes_drupal_modules} WHERE cvid = %d", $node->vid);
         while ($row = db_fetch_object($rs)) {
           $node->{$row->type . '_reference'}[] = $row->vid;
         }
         include_once dirname(__FILE__) . '/archimedes_drupal_site.update.inc';
-        $node->available = _archimedes_drupal_site_project_status($node);
-
-//        module_load_include('inc', 'archimedes_drupal_site');
-//        $node->project_status = archimedes_drupal_site_project_status($node->field_dru_proj[0]['value'], $node->field_mod_version[0]['value']);
+        foreach (archimedes_drupal_site_get_project($node) as $key => $value) {
+          if ($key == 'status') {
+            $key = 'upstream_status';
+          }
+          elseif ($key == 'releases') {
+            $node->release = $value[$node->field_mod_version[0]['value']];
+            continue;
+          }
+          $node->$key = $value;
+        }
       }
     break;
     case 'insert':
