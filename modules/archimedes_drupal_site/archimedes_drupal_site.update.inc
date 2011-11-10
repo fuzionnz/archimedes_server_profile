@@ -33,7 +33,7 @@ function archimedes_drupal_site_get_project(&$node) {
 
   $parser = new update_xml_parser;
   $available = $parser->parse($data);
-  $project = archimedes_drupal_site_calculate_project_data($available[$project['info']['project']]);
+  $project = archimedes_drupal_site_calculate_project_data($available[$project['info']['project']], $project);
   cache_set($cid, $project, 'cache_archimedes_drupal', strtotime('+1 day'));
   return $project;
 
@@ -141,7 +141,7 @@ function _archimedes_drupal_site_build_fetch_url($project) {
  * @see update_process_project_info()
  * @see update_project_cache()
  */
-function archimedes_drupal_site_calculate_project_data($project) {
+function archimedes_drupal_site_calculate_project_data($project, $installed) {
   // If the project status is marked as something bad, there's nothing
   // else to consider.
   if (isset($project['project_status'])) {
@@ -193,7 +193,38 @@ function archimedes_drupal_site_calculate_project_data($project) {
   }
 
   // Figure out the target major version.
-  $existing_major = $project_info['existing_major'];
+  if (preg_match('/^(\d+\.x-)?(\d+)\..*$/', $installed['info']['version'], $matches)) {
+    $installed['info']['existing_major'] = $matches[2];
+  }
+
+  if (isset($installed['info']['version'])) {
+    $installed['info']['install_type'] = 'official';
+    // Check for development snapshots
+    if (preg_match('@(dev|HEAD)@', $installed['info']['version'])) {
+      $installed['info']['install_type'] = 'dev';
+    }
+    
+    // Figure out what the currently installed major version is. We need
+    // to handle both contribution (e.g. "5.x-1.3", major = 1) and core
+    // (e.g. "5.1", major = 5) version strings.
+    $matches = array();
+    if (preg_match('/^(\d+\.x-)?(\d+)\..*$/', $installed['info']['version'], $matches)) {
+      $installed['info']['major'] = $matches[2];
+    }
+    elseif (!isset($installed['info']['major'])) {
+      // This would only happen for version strings that don't follow the
+      // drupal.org convention. We let contribs define "major" in their
+      // .info in this case, and only if that's missing would we hit this.
+      $installed['info']['major'] = -1;
+    }
+  }
+  else {
+    // No version info available at all.
+    $installed['info']['install_type'] = 'unknown';
+    $installed['info']['version'] = t('Unknown');
+    $installed['info']['major'] = -1;
+  }
+
   $supported_majors = array();
   if (isset($project['supported_majors'])) {
     $supported_majors = explode(',', $project['supported_majors']);
@@ -203,9 +234,9 @@ function archimedes_drupal_site_calculate_project_data($project) {
     $supported_majors[] = $project['default_major'];
   }
 
-  if (in_array($existing_major, $supported_majors)) {
+  if (in_array($installed['info']['existing_major'], $supported_majors)) {
     // Still supported, stay at the current major version.
-    $target_major = $existing_major;
+    $target_major = $installed['info']['existing_major'];
   }
   elseif (isset($project['recommended_major'])) {
     // Since 'recommended_major' is defined, we know this is the new XML
@@ -222,7 +253,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
   }
   else {
     // Malformed XML file? Stick with the current version.
-    $target_major = $existing_major;
+    $target_major = $installed['info']['existing_major'];
   }
 
   // Make sure we never tell the admin to downgrade. If we recommended an
@@ -232,7 +263,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
   // unsupported, and there's nothing newer for them to upgrade to, we
   // can't print out a "Recommended version", but just have to tell them
   // what they have is unsupported and let them figure it out.
-  $target_major = max($existing_major, $target_major);
+  $target_major = max($installed['info']['existing_major'], $target_major);
 
   $version_patch_changed = '';
   $patch = '';
@@ -243,9 +274,10 @@ function archimedes_drupal_site_calculate_project_data($project) {
     $project['reason'] = t('No available releases found');
     return $project;
   }
+
   foreach ($project['releases'] as $version => $release) {
     // First, if this is the existing release, check a few conditions.
-    if ($project['existing_version'] === $version) {
+    if ($installed['info']['version'] === $version) {
       if (isset($release['terms']['Release type']) &&
           in_array('Insecure', $release['terms']['Release type'])) {
         $project['status'] = UPDATE_NOT_SECURE;
@@ -334,7 +366,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
     }
 
     // Stop searching once we hit the currently installed version.
-    if ($project['existing_version'] === $version) {
+    if ($installed['info']['version'] === $version) {
       break;
     }
 
@@ -344,7 +376,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
     // differences between the datestamp in the .info file and the
     // timestamp of the tarball itself (which are usually off by 1 or 2
     // seconds) so that we don't flag that as a new release.
-    if ($project['install_type'] == 'dev') {
+    if ($installed['info']['install_type'] == 'dev') {
       if (empty($project['datestamp'])) {
         // We don't have current timestamp info, so we can't know.
         continue;
@@ -360,7 +392,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
         && in_array('Security update', $release['terms']['Release type'])) {
       $project['security updates'][] = $release;
     }
-  }
+  } // foreach ($project['releases'] as $release)
 
   // If we were unable to find a recommended version, then make the latest
   // version the recommended version if possible.
@@ -397,7 +429,7 @@ function archimedes_drupal_site_calculate_project_data($project) {
   // with the latest official version, and record the absolute latest in
   // 'latest_dev' so we can correctly decide if there's a newer release
   // than our current snapshot.
-  if ($project['install_type'] == 'dev') {
+  if ($installed['info']['install_type'] == 'dev') {
     if (isset($project['dev_version']) && $project['releases'][$project['dev_version']]['date'] > $project['releases'][$project['latest_version']]['date']) {
       $project['latest_dev'] = $project['dev_version'];
     }
@@ -407,9 +439,9 @@ function archimedes_drupal_site_calculate_project_data($project) {
   }
 
   // Figure out the status, based on what we've seen and the install type.
-  switch ($project['install_type']) {
+  switch ($installed['info']['install_type']) {
     case 'official':
-      if ($project['existing_version'] === $project['recommended'] || $project['existing_version'] === $project['latest_version']) {
+      if ($installed['info']['version'] === $project['recommended'] || $installed['info']['version'] === $project['latest_version']) {
         $project['status'] = UPDATE_CURRENT;
       }
       else {
