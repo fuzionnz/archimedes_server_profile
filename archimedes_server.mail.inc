@@ -16,6 +16,10 @@ function archimedes_server_open_inbox($server, $port, $user, $pass, $ssl = FALSE
  * Reads the configured inbox and builds array of attached XML
  */
 function archimedes_server_check_inbox() {
+  if (!variable_get('archimedes_mail_user', FALSE) || !variable_get('archimedes_mail_password', FALSE)) {
+    watchdog('Archimedes', 'Skipping inbox check, POP3 account is not configured.', array(), WATCHDOG_NOTICE);
+    return;
+  }
   $mbox = archimedes_server_open_inbox(
     variable_get('archimedes_mail_server', ''),
     variable_get('archimedes_mail_port', '110'),
