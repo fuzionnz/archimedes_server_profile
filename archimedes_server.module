@@ -122,6 +122,7 @@ function archimedes_server_form_validate_inbox($form, $form_state) {
  */
 function archimedes_server_post_xml() {
   if (!$data = json_decode(file_get_contents('php://input'))) {
+    watchdog('archimedes_server', 'Unable to decode submission, expected JSON, got: <pre>%input</pre>', array('%input' => print_r($file_get_contents('php://input'),1)), WATCHDOG_ERROR);
     drupal_not_found();
     die;
   }
@@ -130,10 +131,12 @@ function archimedes_server_post_xml() {
     'success' => 1,
   );
   if (!$xml = archimedes_server_decrypt(base64_decode($data->data), base64_decode($data->key))) {
+    watchdog('archimedes_server', 'Unable to decrypt submitted data.', array(), WATCHDOG_ERROR);
     $return['success'] = 0;
     $return['message'] = 'Failed to decrypt data.';
   }
   elseif (!archimedes_server_process_document($xml)) {
+    watchdog('archimedes_server', 'Unable to process submitted data.', array(), WATCHDOG_ERROR);
     $return['message'] = 'Failed to process decrypted data.';
     $return['success'] = 0;
   }
