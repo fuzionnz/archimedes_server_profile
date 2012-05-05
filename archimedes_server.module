@@ -185,6 +185,7 @@ function archimedes_server_shell_exec($cmd) {
   * @param array $edit only for "save" operation
   */
 function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
+  module_load_include('inc', 'archimedes_server');
   if ($op == 'list') {
     // Generate listing of blocks from this module, for the admin/block page
     $block = array();
