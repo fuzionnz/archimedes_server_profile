@@ -13,8 +13,8 @@ function archimedes_server_perm() {
 }
 
 /**
-* Implementation of hook_menu().
-*/
+ * Implementation of hook_menu().
+ */
 function archimedes_server_menu() {
   $items = array();
   $items['admin/archimedes'] = array(
@@ -40,7 +40,7 @@ function archimedes_server_menu() {
 
 /**
  * Settings form.
- * 
+ *
  * @TODO #7: Show a warning if archimedes_server_check_webkit() fails here.
  */
 function archimedes_server_admin() {
@@ -88,7 +88,7 @@ function archimedes_server_admin() {
     '#type' => 'checkbox',
     '#title' => 'Delete emails once received',
     '#description' => 'If emails are not deleted then they will be imported again and again. This is useful for debugging',
-    '#default_value' => variable_get('archimedes_server_delete_emails', TRUE), 
+    '#default_value' => variable_get('archimedes_server_delete_emails', TRUE),
   );
   $form['archimedes_keys'] = array(
     '#type' => 'fieldset',
@@ -151,7 +151,6 @@ function archimedes_server_cron() {
   require_once dirname(__FILE__) . '/archimedes_server.mail.inc';
   archimedes_server_clear_inbox();
 }
-
 
 /**
  * Check for the presense of webkit.
@@ -290,11 +289,11 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
             }
             if ($ref_node['referrers']['field_dbhost']) {
               $used += (int) $node->field_db_size[0]['value'];
-            } 
+            }
           }
-          
+
           $canvas = charts_graphs_get_graph(variable_get('archimedes_ui_graph', 'google-charts'));
-          
+
           $canvas->title = "Total Usage";
           $canvas->type = "pie";
           $canvas->width = 550;
@@ -303,7 +302,7 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
             'Used Space' => array($used, ($total > $used ? $total - $used : 0)),
             'Free Space' => array(1)
           );
- 
+
           $canvas->x_labels = array(archimedes_server_format_bytes($used), archimedes_server_format_bytes($total - $used));
 
           $subject = t('Total Usage');
@@ -313,11 +312,11 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
       case 3:
         if(arg(0) == 'node' && is_numeric(arg(1)) && ! arg(2)) {
           $host = node_load(arg(1));
-          
+
           $used = array();
           // Get list of nodes showing current host as webserver or dbhost
           $data = nodereferrer_referrers(arg(1),array('field_webserver', 'field_dbhost'));
-          
+
           // Loop through each reffering site and add server usage
           foreach($data as $ref_node) {
             $node = node_load($ref_node['nid'],null,TRUE);
@@ -330,16 +329,16 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
             }
             if ($ref_node['referrers']['field_dbhost']) {
               $used[$ref_node['nid']]['usage'] += (int) $node->field_db_size[0]['value'];
-            } 
+            }
           }
-          
+
           $canvas = charts_graphs_get_graph(variable_get('archimedes_ui_graph', 'google-charts'));
-          
+
           $canvas->title = "Usage by Site";
           $canvas->type = "pie";
           $canvas->width = 550;
           $canvas->height = 300;
-          
+
           //Rearrange data because charts_graphs module is strange
           $sizes = $labels = $series = array();
           foreach($used as $site) {
@@ -355,8 +354,8 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
             $series[$site['title']] = $sizes;
           }
           $canvas->series = $series;
-          
- 
+
+
           $canvas->x_labels = $labels;
 
           $subject = t('Usage by Site');
@@ -370,9 +369,7 @@ function archimedes_server_block($op = 'list', $delta = 0, $edit = array()) {
 
     return $block;
   }
-
 } // function archimedes_server_block
-
 
 /**
 * Implementation of hook_nodeapi().
