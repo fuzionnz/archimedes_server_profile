@@ -1,83 +1,203 @@
-name = Archimedes Server
-description = Passive Application Monitoring tool for web applications
-core = 6.x
-theme = cube
-
-; Profile dependancies
-dependencies[] = admin
-dependencies[] = admin_tools
-dependencies[] = advanced_help
+; Packaging information for archimedes_server_profile
+name = "Archimedes Server"
+description = "Drupal site tracker"
+exclusive = "1"
+core = "7.x"
+; ----------
+; Dependencies
+; ----------
+; Archimedes
 dependencies[] = archimedes
-dependencies[] = archimedes_server_ui
+dependencies[] = archimedes_project
 dependencies[] = archimedes_server
-dependencies[] = content
-dependencies[] = charts_graphs
-dependencies[] = charts_graphs_google_charts
-dependencies[] = comment
-dependencies[] = context
-dependencies[] = context_ui
+; Chaos tool suite
 dependencies[] = ctools
-dependencies[] = date
-dependencies[] = date_api
-dependencies[] = date_timezone
-dependencies[] = dblog
-dependencies[] = features
-dependencies[] = fieldgroup
-dependencies[] = filefield
-dependencies[] = help
-dependencies[] = imageapi
-dependencies[] = imageapi_gd
-dependencies[] = imagecache
-dependencies[] = imagecache_ui
-dependencies[] = imagecache_canvasactions
-dependencies[] = imagecache_coloractions
-dependencies[] = imagecache_profiles
-dependencies[] = imagefield
-dependencies[] = job_scheduler
-dependencies[] = lightbox2
-dependencies[] = link
-dependencies[] = nodeaccess
-dependencies[] = nodereference
-dependencies[] = nodereferrer
-dependencies[] = number
-dependencies[] = og
-dependencies[] = optionwidgets
 dependencies[] = page_manager
-dependencies[] = panels
-dependencies[] = panels_tabs
+dependencies[] = views_content
+; Core
+dependencies[] = block
+dependencies[] = book
+dependencies[] = color
+dependencies[] = comment
+dependencies[] = contextual
+dependencies[] = dashboard
+dependencies[] = dblog
+dependencies[] = field
+dependencies[] = field_sql_storage
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = filter
+dependencies[] = help
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = number
+dependencies[] = options
+dependencies[] = overlay
 dependencies[] = path
-dependencies[] = pathauto
-dependencies[] = revisionreference
+dependencies[] = rdf
 dependencies[] = search
-dependencies[] = spaces
-dependencies[] = strongarm
-dependencies[] = tabs
-dependencies[] = tagging
+dependencies[] = shortcut
+dependencies[] = system
 dependencies[] = taxonomy
 dependencies[] = text
+dependencies[] = toolbar
+dependencies[] = update
+dependencies[] = user
+; Fields
+dependencies[] = entityreference
+dependencies[] = link
+; Other
+dependencies[] = entity
+dependencies[] = entity_token
+dependencies[] = environment
+dependencies[] = libraries
+dependencies[] = menu_position
+dependencies[] = pathauto
+dependencies[] = redirect
+dependencies[] = strongarm
 dependencies[] = token
-dependencies[] = userreference
+dependencies[] = twitter_bootstrap_ui
+; Panels
+dependencies[] = panels
+; Performance and scalability
+dependencies[] = entitycache
+; User interface
+dependencies[] = jquery_update
+; Views
 dependencies[] = views
-dependencies[] = views_content
+dependencies[] = views_bulk_operations
 dependencies[] = views_ui
-dependencies[] = views_groupby
+; Features
+dependencies[] = features
+dependencies[] = archimedes_server_feature
 
-
-
-; The admin user
-users[admin][uid]    = 1
-users[admin][name]   = admin
-users[admin][mail]   = admin@archimedes.domain
-users[admin][roles]  = Admin,Publisher
-users[admin][status] = 1
-
-; User to create content on-the-fly by reports.
-users[system][uid]   = 2
-users[system][name]  = system
-users[system][mail]  = system@no-reply
-users[system][roles] = Publisher
-users[system][status]= 1
-
-; Defaults for site name
-variables[site_name] = Archimedes Server
-variables[site_mail] = no-reply@archimedes.domain
+; ----------
+; Variables
+; ----------
+variables[filter_fallback_format] = 'plain_text'
+variables[node_preview_project] = '0'
+variables[node_options_project][0] = 'status'
+variables[save_continue_host] = 'Save and add fields'
+variables[node_options_page][0] = 'status'
+variables[user_pictures] = '1'
+variables[user_picture_dimensions] = '1024x1024'
+variables[user_picture_file_size] = '800'
+variables[user_picture_style] = 'thumbnail'
+variables[user_register] = 2
+variables[field_bundle_settings_node__book][extra_fields][form][title][weight] = '-5'
+variables[save_continue_project] = 'Save and add fields'
+variables[comment_project] = '2'
+variables[comment_default_mode_project] = 1
+variables[additional_settings__active_tab_website] = 'edit-menu'
+variables[node_preview_website] = '1'
+variables[node_options_website][0] = 'status'
+variables[save_continue_website] = 'Save and add fields'
+variables[pathauto_forum_pattern] = '[term:vocabulary]/[term:name]'
+variables[date_default_timezone] = 'Pacific/Auckland'
+variables[comment_website] = '2'
+variables[comment_default_mode_website] = 1
+variables[comment_default_per_page_website] = '50'
+variables[comment_default_per_page_project] = '50'
+variables[comment_subject_field_website] = 1
+variables[comment_subject_field_project] = 1
+variables[comment_form_location_website] = 1
+variables[comment_preview_website] = '1'
+variables[menu_parent_website] = 'main-menu:0'
+variables[comment_form_location_project] = 1
+variables[comment_preview_project] = '1'
+variables[menu_parent_project] = 'main-menu:0'
+variables[additional_settings__active_tab_host] = 'edit-display'
+variables[node_preview_host] = '0'
+variables[node_options_host][0] = 'status'
+variables[node_options_host][1] = 'revision'
+variables[comment_host] = '1'
+variables[comment_default_mode_host] = 1
+variables[comment_default_per_page_host] = '50'
+variables[comment_subject_field_host] = 1
+variables[comment_form_location_host] = 1
+variables[comment_preview_host] = '0'
+variables[menu_parent_host] = 'main-menu:0'
+variables[additional_settings__active_tab_project] = 'edit-menu'
+variables[pathauto_node_pattern] = '[node:content-type]/[node:nid]/[node:title]'
+variables[archimedes_common_key] = '1fbb8e68512b031ca2abdc68e35d675c'
+variables[pathauto_user_pattern] = 'users/[user:name]'
+variables[pathauto_blog_pattern] = 'blogs/[user:name]'
+variables[theme_default] = 'archimedes_theme'
+variables[pathauto_punctuation_hyphen] = 1
+variables[admin_theme] = 'rubik'
+variables[entitycache_enabled] = true
+variables[node_admin_theme] = 1
+variables[pathauto_taxonomy_term_pattern] = '[term:vocabulary]/[term:name]'
+variables[archimedes_send_method] = 'postXML'
+variables[archimedes_cron_update] = '1'
+variables[entityreference:base-tables][comment][0] = 'comment'
+variables[entityreference:base-tables][comment][1] = 'cid'
+variables[entityreference:base-tables][node][0] = 'node'
+variables[entityreference:base-tables][node][1] = 'nid'
+variables[entityreference:base-tables][redirect][0] = 'redirect'
+variables[entityreference:base-tables][redirect][1] = 'rid'
+variables[entityreference:base-tables][file][0] = 'file_managed'
+variables[entityreference:base-tables][file][1] = 'fid'
+variables[entityreference:base-tables][taxonomy_term][0] = 'taxonomy_term_data'
+variables[entityreference:base-tables][taxonomy_term][1] = 'tid'
+variables[entityreference:base-tables][taxonomy_vocabulary][0] = 'taxonomy_vocabulary'
+variables[entityreference:base-tables][taxonomy_vocabulary][1] = 'vid'
+variables[entityreference:base-tables][user][0] = 'users'
+variables[entityreference:base-tables][user][1] = 'uid'
+variables[additional_settings__active_tab_product] = 'edit-menu'
+variables[node_preview_product] = '0'
+variables[node_options_product][0] = 'status'
+variables[save_continue_product] = 'Save and add fields'
+variables[comment_product] = '2'
+variables[comment_default_mode_product] = 1
+variables[comment_default_per_page_product] = '50'
+variables[comment_subject_field_product] = 1
+variables[comment_form_location_product] = 1
+variables[comment_preview_product] = '1'
+variables[menu_parent_product] = 'main-menu:0'
+variables[field_bundle_settings_node__project][view_modes][teaser][custom_settings] = true
+variables[field_bundle_settings_node__project][view_modes][full][custom_settings] = false
+variables[field_bundle_settings_node__project][view_modes][rss][custom_settings] = false
+variables[field_bundle_settings_node__project][view_modes][search_index][custom_settings] = false
+variables[field_bundle_settings_node__project][view_modes][search_result][custom_settings] = false
+variables[field_bundle_settings_node__project][view_modes][print][custom_settings] = false
+variables[field_bundle_settings_node__project][view_modes][token][custom_settings] = false
+variables[field_bundle_settings_node__project][extra_fields][form][title][weight] = '0'
+variables[field_bundle_settings_node__project][extra_fields][form][path][weight] = '12'
+variables[field_bundle_settings_node__project][extra_fields][form][redirect][weight] = '11'
+variables[array_filter] = true
+variables[default_nodes_main] = '10'
+variables[pathauto_node_book_pattern] = '[node:book:parent]/page/[node:nid]/[node:title]'
+variables[pathauto_node_product_pattern] = 'products/[node:nid]/[node:title]'
+variables[pathauto_node_project_pattern] = 'modules/[node:nid]/[node:title]'
+variables[site_frontpage] = 'products'
+variables[field_bundle_settings_node__website][view_modes][teaser][custom_settings] = true
+variables[field_bundle_settings_node__website][view_modes][full][custom_settings] = false
+variables[field_bundle_settings_node__website][view_modes][rss][custom_settings] = false
+variables[field_bundle_settings_node__website][view_modes][search_index][custom_settings] = false
+variables[field_bundle_settings_node__website][view_modes][search_result][custom_settings] = false
+variables[field_bundle_settings_node__website][view_modes][print][custom_settings] = false
+variables[field_bundle_settings_node__website][view_modes][token][custom_settings] = false
+variables[field_bundle_settings_node__website][extra_fields][form][title][weight] = '0'
+variables[field_bundle_settings_node__website][extra_fields][form][path][weight] = '30'
+variables[field_bundle_settings_node__website][extra_fields][form][redirect][weight] = '30'
+variables[archimedes_cron_last] = 1355963602
+variables[ldap_servers_encrypt_key] = 'dFcRFwy/IE'
+variables[book_block_mode] = 'book pages'
+variables[node_options_book][0] = 'status'
+variables[update_last_email_notification] = 1355281282
+variables[path_alias_whitelist][taxonomy] = true
+variables[path_alias_whitelist][user] = true
+variables[path_alias_whitelist][node] = true
+variables[field_bundle_settings_node__product][view_modes][teaser][custom_settings] = true
+variables[field_bundle_settings_node__product][view_modes][full][custom_settings] = false
+variables[field_bundle_settings_node__product][view_modes][rss][custom_settings] = false
+variables[field_bundle_settings_node__product][view_modes][search_index][custom_settings] = false
+variables[field_bundle_settings_node__product][view_modes][search_result][custom_settings] = false
+variables[field_bundle_settings_node__product][view_modes][print][custom_settings] = false
+variables[field_bundle_settings_node__product][view_modes][token][custom_settings] = false
+variables[field_bundle_settings_node__product][extra_fields][form][title][weight] = '0'
+variables[field_bundle_settings_node__product][extra_fields][form][path][weight] = '7'
+variables[field_bundle_settings_node__product][extra_fields][form][redirect][weight] = '6'
