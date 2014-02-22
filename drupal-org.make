@@ -1,8 +1,6 @@
 ; Archimedes Server make file
-core = "7.x"
-api = "2"
-; comment this out in to use on drupal.org
-projects[drupal][version] = "7.x"
+core = 7.x
+api = 2
 
 ; Modules
 projects[archimedes][download][type] = "git"
