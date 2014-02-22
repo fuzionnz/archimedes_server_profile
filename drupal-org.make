@@ -66,7 +66,7 @@ projects[views_bulk_operations][version] = "3.2"
 projects[views_bulk_operations][subdir] = "contrib"
 
 projects[archimedes_server][download][type] = "git"
-projects[archimedes_server][download][url] = "http://git.drupal.org/sandbox/fiasco/1116748.git"
+projects[archimedes_server][download][url] = "https://github.com/xurizaemon/archimedes_server.git"
 projects[archimedes_server][download][revision] = "7.x-1.x"
 projects[archimedes_server][type] = "module"
 projects[archimedes_server][subdir] = "contrib"
