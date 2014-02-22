@@ -26,7 +26,7 @@ Archimedes currently collects these metrics
 Some of the features of Archimedes
 ----------------------------------
 
-Client communitcates with the server via Email. This means the client can get around firewalls without additional firewall exemptions
+Client communicates with the server via Email. This means the client can get around firewalls without additional firewall exemptions
 
 RSA key encryption. All data collected by clients is encrypted with the server's public RSA key. Only the server can decrypt it to read the information
 
