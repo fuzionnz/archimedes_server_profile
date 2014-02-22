@@ -36,9 +36,9 @@ Installation
 Create a make "stub" file in an empty directory that will soon be your Archimedes root with the following contents:
 
     ; make file for archimedes_server_profile
-    core = 6.x
-    projects[] = drupal
+    core = 7.x
     api = 2
+    projects[] = drupal
     ; Profile.
     projects[archimedes_server_profile][type] = profile
     projects[archimedes_server_profile][download][type] = git
