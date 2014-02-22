@@ -1,5 +1,5 @@
-Archimedes Server
-=================
+Archimedes Server Profile
+=========================
 
 Archimedes is a passive application monitoring server built on Drupal but designed to facilitate any web based application. Archimedes achieves passive application monitoring by installing an Archimedes client on your web hosted application. In Drupal's case, it's installing the Archimedes Client module.
 
