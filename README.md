@@ -1,7 +1,7 @@
 Archimedes Server
 =================
 
-Archimedes is a passive application monitoring server built on Drupal but designed to facilitate any web based application. Archimedes achieves passive application monitoring by installing an Archimedes client on your web hosted application. In Drupal's case, its installing the Archimedes Client module.
+Archimedes is a passive application monitoring server built on Drupal but designed to facilitate any web based application. Archimedes achieves passive application monitoring by installing an Archimedes client on your web hosted application. In Drupal's case, it's installing the Archimedes Client module.
 
 The Client collects up information about the application and sends it back to the server where the server reads it in and creates or updates the site node that represents that client on the server.
 
@@ -26,9 +26,8 @@ Archimedes currently collects these metrics
 Some of the features of Archimedes
 ----------------------------------
 
-Client communicates with the server via Email. This means the client can get around firewalls without additional firewall exemptions
-
-RSA key encryption. All data collected by clients is encrypted with the server's public RSA key. Only the server can decrypt it to read the information
+ * HTTP or SMTP communication with the server. Permits Archimedes to monitor sites behind firewalls without requiring firewall exemptions.
+ * RSA key encryption. All data collected by clients is encrypted in transit with the server's public RSA key.
 
 Installation
 ------------
