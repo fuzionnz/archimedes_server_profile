@@ -42,7 +42,7 @@ Create a make "stub" file in an empty directory that will soon be your Archimede
     ; Profile.
     projects[archimedes_server_profile][type] = profile
     projects[archimedes_server_profile][download][type] = git
-    projects[archimedes_server_profile][download][url] = http://git.drupal.org/sandbox/fiasco/1116734.git
+    projects[archimedes_server_profile][download][url] = https://github.com/xurizaemon/archimedes_server_profile.git
 
 Run the stub file with drush make:
 
