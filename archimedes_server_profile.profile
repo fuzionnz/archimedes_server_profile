@@ -1,4 +1,18 @@
 <?php
+
+if (!function_exists('profiler_v2')) {
+  if (file_exists('sites/all/libraries/profiler/profiler.inc')) {
+    require_once('sites/all/libraries/profiler/profiler.inc');
+  }
+  elseif (file_exists('profiles/archimedes_server_profile/libraries/profiler/profiler.inc')) {
+    require_once('profiles/archimedes_server_profile/libraries/profiler/profiler.inc');
+  }
+  else {
+    die('Archimedes Server Profile requires Profiler.');
+  }
+}
+profiler_v2('archimedes_server_profile');
+
 /**
  * Implements hook_form_FORM_ID_alter().
  *
@@ -26,8 +40,6 @@ function system_form_install_configure_archimedes_submit(&$form, $form_state) {
   $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']) ? 'https://' : 'http://';
   variable_set('archimedes_server_url', $scheme . $form_state['values']['archimedes_server_url_domain'] . base_path() . 'archimedes/update');
 }
-
-
 
 /**
  * Implements hook_form_alter().
