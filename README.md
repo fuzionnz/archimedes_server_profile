@@ -36,8 +36,8 @@ Clone this profile repo, then run `drush make` with the file `build-archimedes.m
 
     drush make path/to/archimedes_server_profile/build-archimedes.make /path/to/archimedes.example.org
 
-_Help wanted ... it should be possible to do this by pointing `drush
-make` at the URL for a raw .make file?_
+@TODO: _It should be possible to do this by pointing `drush make` at
+the URL for a raw .make file?_
 
 This will build your Archimedes Server codebase. Now you can run
 Drupal installation by visiting the site or from the CLI using `drush
@@ -71,4 +71,13 @@ Here you'll need to copy the settings from your Archimedes server to
 your client. For HTTP submission, you need the _Submission URL_ and
 the _Server Public Key_.
 
-@TODO: Document how to submit over email, currently unexplored.
+@TODO: _Document how to submit over email, currently unexplored._
+
+Managing Updates
+----------------
+
+When a site is configured, it will push its reports to the Archimedes
+Server daily. The Archimedes Server processes these reports and
+imports them to new nodes/node revisions when cron runs. Because your
+reports depend on cron happening on two sites, you may see some delays
+if you don't configure cron to account for this.

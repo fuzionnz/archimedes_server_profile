@@ -41,13 +41,14 @@ dependencies[] = shortcut
 dependencies[] = system
 dependencies[] = taxonomy
 dependencies[] = text
+dependencies[] = toolbar
 dependencies[] = update
 dependencies[] = user
 ; Fields
 dependencies[] = entityreference
 dependencies[] = link
 ; Other
-dependencies[] = admin_menu
+; dependencies[] = admin_menu
 dependencies[] = entity
 dependencies[] = entity_token
 dependencies[] = environment
