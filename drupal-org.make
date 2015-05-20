@@ -7,6 +7,9 @@ projects[archimedes][download][url] = "https://github.com/xurizaemon/archimedes.
 projects[archimedes][subdir] = "contrib"
 projects[archimedes][type] = "module"
 
+projects[admin_menu][subdir] = contrib
+projects[admin_menu][version] = 3.0-rc5
+
 projects[ctools][version] = "1.7"
 projects[ctools][subdir] = "contrib"
 
