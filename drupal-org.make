@@ -74,8 +74,8 @@ projects[archimedes_server][subdir] = "contrib"
 ; Themes
 ; archimedes_theme
 projects[archimedes_theme][download][type] = "git"
-projects[archimedes_theme][download][url] = "http://git.drupal.org/sandbox/fiasco/1871610.git"
-projects[archimedes_theme][download][revision] = "master"
+projects[archimedes_theme][download][url] = "http://github.com/xurizaemon/archimedes_theme.git"
+projects[archimedes_theme][download][revision] = "7.x-1.x"
 projects[archimedes_theme][type] = "theme"
 
 ; twitter_bootstrap
