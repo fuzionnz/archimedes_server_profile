@@ -10,19 +10,19 @@ projects[archimedes][type] = "module"
 projects[ctools][version] = "1.7"
 projects[ctools][subdir] = "contrib"
 
-projects[features][version] = "2.3"
+projects[features][version] = "2.5"
 projects[features][subdir] = "contrib"
 
 projects[entityreference][version] = "1.1"
 projects[entityreference][subdir] = "contrib"
 
-projects[link][version] = "1.2"
+projects[link][version] = "1.3"
 projects[link][subdir] = "contrib"
 
-projects[entity][version] = "1.3"
+projects[entity][version] = "1.6"
 projects[entity][subdir] = "contrib"
 
-projects[environment][version] = "1.0-beta1"
+projects[environment][version] = "1.0"
 projects[environment][subdir] = "contrib"
 
 projects[libraries][version] = "2.2"
@@ -53,10 +53,10 @@ projects[entitycache][version] = "1.x-dev"
 projects[entitycache][subdir] = "contrib"
 projects[entitycache][patch][1851398] = "http://drupal.org/files/entitycache-numeric-ids.patch"
 
-projects[jquery_update][version] = "2.3"
+projects[jquery_update][version] = "2.5"
 projects[jquery_update][subdir] = "contrib"
 
-projects[views][version] = "3.7"
+projects[views][version] = "3.11"
 projects[views][subdir] = "contrib"
 
 projects[views_bulk_operations][version] = "3.2"
@@ -85,11 +85,11 @@ projects[bootstrap][version] = "2.2"
 projects[bootstrap][subdir] = "contrib"
 ; rubik
 projects[rubik][type] = "theme"
-projects[rubik][version] = "4.0-rc1"
+projects[rubik][version] = "4.2"
 projects[rubik][subdir] = "contrib"
 ; tao
 projects[tao][type] = "theme"
-projects[tao][version] = "3.0-beta4"
+projects[tao][version] = "3.1"
 projects[tao][subdir] = "contrib"
 
 ; Libraries
