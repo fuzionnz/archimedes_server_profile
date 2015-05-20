@@ -1,9 +1,5 @@
-; Archimedes Server make file
 core = 7.x
 api = 2
-; comment this out in to use on drupal.org
-;projects[drupal][type] = core
-;projects[drupal][version] = "7.x"
 
 ; Modules
 projects[archimedes][download][type] = "git"
@@ -55,7 +51,7 @@ projects[panels][subdir] = "contrib"
 
 projects[entitycache][version] = "1.x-dev"
 projects[entitycache][subdir] = "contrib"
-projects[entitycache][patches][1851398] = "http://drupal.org/files/entitycache-numeric-ids.patch"
+projects[entitycache][patch][1851398] = "http://drupal.org/files/entitycache-numeric-ids.patch"
 
 projects[jquery_update][version] = "2.3"
 projects[jquery_update][subdir] = "contrib"
@@ -105,7 +101,6 @@ libraries[twitter_bootstrap][download][url] = "http://getbootstrap.com/2.3.2/ass
 
 libraries[profiler][download][type] = "get"
 libraries[profiler][download][url] = "http://ftp.drupal.org/files/projects/profiler-7.x-2.0-beta2.tar.gz"
-libraries[profiler][patches][2412003] = https://www.drupal.org/files/issues/checkfordbtableexists-2412003-1.patch
 
 libraries[archimedes][download][type] = "get"
 libraries[archimedes][download][url] = "https://raw.github.com/fiasco/Archimedes-Library/master/php/archimedes.class.php"

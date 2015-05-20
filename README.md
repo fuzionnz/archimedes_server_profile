@@ -32,17 +32,12 @@ Some of the features of Archimedes
 Installation
 ------------
 
-Create a make "stub" file in an empty directory that will soon be your Archimedes root with the following contents:
+Clone this profile repo, then run `drush make` with the file `build-archimedes.make` from within it.
 
-    ; make file for archimedes_server_profile
-    core = 7.x
-    api = 2
-    projects[] = drupal
-    ; Profile.
-    projects[archimedes_server_profile][type] = profile
-    projects[archimedes_server_profile][download][type] = git
-    projects[archimedes_server_profile][download][url] = https://github.com/xurizaemon/archimedes_server_profile.git
+    drush make path/to/archimedes_server_profile/build-archimedes.make /path/to/archimedes.example.org
 
-Run the stub file with drush make:
+_Help wanted ... it should be possible to do this by pointing `drush make` at the URL for a raw .make file?_
 
-    drush make <stub_filename>.make
+This will build your Archimedes Server codebase.
+
+Now visit the site and install Archimedes!
