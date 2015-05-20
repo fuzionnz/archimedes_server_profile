@@ -36,8 +36,39 @@ Clone this profile repo, then run `drush make` with the file `build-archimedes.m
 
     drush make path/to/archimedes_server_profile/build-archimedes.make /path/to/archimedes.example.org
 
-_Help wanted ... it should be possible to do this by pointing `drush make` at the URL for a raw .make file?_
+_Help wanted ... it should be possible to do this by pointing `drush
+make` at the URL for a raw .make file?_
 
-This will build your Archimedes Server codebase.
+This will build your Archimedes Server codebase. Now you can run
+Drupal installation by visiting the site or from the CLI using `drush
+site-install`
 
-Now visit the site and install Archimedes!
+When using the web installer, you will be prompted also for the
+"Server Domain" - this is the URL which your Archimedes client sites
+will report status to if submitting over HTTP.
+
+To install via CLI, set the site URL using `site_information.archimedes_server_url_domain` -
+
+    drush -y site-install archimedes_server_profile \
+      --db-url=mysql://test_archimedes:password@localhost/test_archimedes \
+      --account-mail=admin@example.org \
+      --site-name='Archimedes' \
+      -l https://test-archimedes.fudev.co.nz \
+      site_information.archimedes_server_url_domain=https://test-archimedes.fudev.co.nz
+
+Setting up client sites
+-----------------------
+
+You're done! OK, you're not, but your Archimedes server should have
+reported in its own initial module status to itself, so you have a
+taste ready to go.
+
+To install additional client sites, add the Archimedes library and
+module to the site, and configure it by visiting the Archimedes
+settings screen (Reports > Archimedes > Settings).
+
+Here you'll need to copy the settings from your Archimedes server to
+your client. For HTTP submission, you need the _Submission URL_ and
+the _Server Public Key_.
+
+@TODO: Document how to submit over email, currently unexplored.
