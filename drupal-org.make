@@ -2,18 +2,19 @@
 core = 7.x
 api = 2
 ; comment this out in to use on drupal.org
+;projects[drupal][type] = core
 ;projects[drupal][version] = "7.x"
 
 ; Modules
 projects[archimedes][download][type] = "git"
-projects[archimedes][download][url] = "http://git.drupal.org/sandbox/fiasco/1116808.git"
+projects[archimedes][download][url] = "https://github.com/xurizaemon/archimedes.git"
 projects[archimedes][subdir] = "contrib"
 projects[archimedes][type] = "module"
 
-projects[ctools][version] = "1.4"
+projects[ctools][version] = "1.7"
 projects[ctools][subdir] = "contrib"
 
-projects[features][version] = "2.0"
+projects[features][version] = "2.3"
 projects[features][subdir] = "contrib"
 
 projects[entityreference][version] = "1.1"
@@ -25,7 +26,7 @@ projects[link][subdir] = "contrib"
 projects[entity][version] = "1.3"
 projects[entity][subdir] = "contrib"
 
-projects[environment][version] = "1.x-dev"
+projects[environment][version] = "1.0-beta1"
 projects[environment][subdir] = "contrib"
 
 projects[libraries][version] = "2.2"
@@ -43,13 +44,13 @@ projects[redirect][subdir] = "contrib"
 projects[strongarm][version] = "2.0"
 projects[strongarm][subdir] = "contrib"
 
-projects[token][version] = "1.5"
+projects[token][version] = "1.6"
 projects[token][subdir] = "contrib"
 
 projects[twitter_bootstrap_ui][version] = "2.x-dev"
 projects[twitter_bootstrap_ui][subdir] = "contrib"
 
-projects[panels][version] = "3.4"
+projects[panels][version] = "3.5"
 projects[panels][subdir] = "contrib"
 
 projects[entitycache][version] = "1.x-dev"
@@ -100,7 +101,7 @@ libraries[twitter_bootstrap][directory_name] = "twitter_bootstrap"
 libraries[twitter_bootstrap][type] = "library"
 libraries[twitter_bootstrap][destination] = "libraries"
 libraries[twitter_bootstrap][download][type] = "get"
-libraries[twitter_bootstrap][download][url] = "http://twitter.github.com/bootstrap/assets/bootstrap.zip"
+libraries[twitter_bootstrap][download][url] = "http://getbootstrap.com/2.3.2/assets/bootstrap.zip"
 
 libraries[profiler][download][type] = "get"
 libraries[profiler][download][url] = "http://ftp.drupal.org/files/projects/profiler-7.x-2.0-beta2.tar.gz"
