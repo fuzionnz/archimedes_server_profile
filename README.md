@@ -71,6 +71,26 @@ Here you'll need to copy the settings from your Archimedes server to
 your client. For HTTP submission, you need the _Submission URL_ and
 the _Server Public Key_.
 
+Configuring client sites
+------------------------
+
+**Base URL** - If submitting updates from Archimedes, you can use
+`drush arch-send` to push an update out from the client site. For this
+to work, Drush needs to know the location of the site (either
+configure `$base_url` in _settings.php_ or use `-l` parameter to
+Drush).
+
+**Environment** - You should set your site environment to enable
+Archimedes to discern between copies of sites.
+
+    drush vset environment production
+
+**Additional data** - Archimedes has an unexposed variable,
+`archimedes_use_unsafe_collection`, which if set to TRUE on a site
+will enable additional data collection there.
+
+    drush vset archimedes_use_unsafe_collection 1
+
 @TODO: _Document how to submit over email, currently unexplored._
 
 Managing Updates
