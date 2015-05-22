@@ -35,6 +35,9 @@ projects[environment][subdir] = "contrib"
 projects[features][version] = "2.5"
 projects[features][subdir] = "contrib"
 
+projects[field_group][version] = "1.4"
+projects[field_group][subdir] = "contrib"
+
 projects[jquery_update][version] = "2.5"
 projects[jquery_update][subdir] = "contrib"
 
